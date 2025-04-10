@@ -1,0 +1,23 @@
+{
+  "common": {
+    "appName": "Bricks & Mortar",
+    "welcome": "Willkommen bei Bricks & Mortar"
+  },
+  "navigation": {
+    "home": "Startseite",
+    "properties": "Immobilien",
+    "expenses": "Ausgaben",
+    "settings": "Einstellungen"
+  }
+}{
+  "common": {
+    "appName": "Bricks & Mortar",
+    "welcome": "Willkommen bei Bricks & Mortar"
+  },
+  "navigation": {
+    "home": "Startseite",
+    "properties": "Immobilien",
+    "expenses": "Ausgaben",
+    "settings": "Einstellungen"
+  }
+}
