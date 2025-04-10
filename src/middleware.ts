@@ -8,10 +8,10 @@ export default createMiddleware({
   // If this locale is matched, pathnames work without a prefix (e.g. `/about`)
   defaultLocale,
 
-  // The default locale will be used when a non-existent locale is provided
+  // Always use locale prefix in the URL
   localePrefix: 'always',
 
-  // Paths to exclude from locale detection
+  // Disable automatic locale detection
   localeDetection: false,
 });
 

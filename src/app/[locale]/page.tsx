@@ -17,9 +17,9 @@ export default function Home({ params: { locale } }: { params: { locale: string 
           <div className="font-bold text-xl">{t('common.appName')}</div>
           <div className="space-x-4">
             <Button variant="outline" className="px-5">
-              Log in
+              {t('auth.login')}
             </Button>
-            <Button>Sign up</Button>
+            <Button>{t('auth.signup')}</Button>
           </div>
         </div>
       </header>
@@ -31,13 +31,12 @@ export default function Home({ params: { locale } }: { params: { locale: string 
             <div className="text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">{t('common.welcome')}</h1>
               <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8">
-                Track expenses, manage properties, and handle shared costs efficiently with Bricks &
-                Mortar.
+                {t('home.hero.description')}
               </p>
               <div className="flex justify-center gap-4">
-                <Button size="lg">Get Started</Button>
+                <Button size="lg">{t('home.hero.getStarted')}</Button>
                 <Button variant="outline" size="lg">
-                  Learn More
+                  {t('home.hero.learnMore')}
                 </Button>
               </div>
             </div>
@@ -47,20 +46,20 @@ export default function Home({ params: { locale } }: { params: { locale: string 
         {/* Features Section */}
         <section className="py-16 px-6 bg-gray-50">
           <div className="container mx-auto max-w-6xl">
-            <h2 className="text-3xl font-bold text-center mb-12">Key Features</h2>
+            <h2 className="text-3xl font-bold text-center mb-12">{t('home.features.title')}</h2>
             <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
-                  title: 'Expense Tracking',
-                  description: 'Easily log and categorize all property-related expenses.',
+                  title: t('home.features.expenseTracking.title'),
+                  description: t('home.features.expenseTracking.description'),
                 },
                 {
-                  title: 'Property Management',
-                  description: 'Manage multiple properties with detailed insights and reporting.',
+                  title: t('home.features.propertyManagement.title'),
+                  description: t('home.features.propertyManagement.description'),
                 },
                 {
-                  title: 'Shared Costs',
-                  description: 'Split expenses between tenants, owners, and property managers.',
+                  title: t('home.features.sharedCosts.title'),
+                  description: t('home.features.sharedCosts.description'),
                 },
               ].map((feature, index) => (
                 <div key={index} className="p-6 border rounded-lg bg-white">
@@ -79,21 +78,21 @@ export default function Home({ params: { locale } }: { params: { locale: string 
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
               <p className="text-sm">
-                © {new Date().getFullYear()} {t('common.appName')}. All rights reserved.
+                © {new Date().getFullYear()} {t('common.appName')}. {t('common.allRightsReserved')}.
               </p>
             </div>
             <div className="flex gap-6">
               <Link href="/about" className="text-sm hover:underline">
-                About
+                {t('navigation.about')}
               </Link>
               <Link href="/privacy" className="text-sm hover:underline">
-                Privacy
+                {t('navigation.privacy')}
               </Link>
               <Link href="/terms" className="text-sm hover:underline">
-                Terms
+                {t('navigation.terms')}
               </Link>
               <Link href="/contact" className="text-sm hover:underline">
-                Contact
+                {t('navigation.contact')}
               </Link>
             </div>
           </div>

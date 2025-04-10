@@ -1,12 +1,47 @@
 {
   "common": {
     "appName": "Bricks & Mortar",
-    "welcome": "Willkommen bei Bricks & Mortar"
+    "welcome": "Willkommen bei Bricks & Mortar",
+    "allRightsReserved": "Alle Rechte vorbehalten"
+  },
+  "metadata": {
+    "title": "Bricks & Mortar",
+    "description": "Immobilien-Ausgabenverfolgungsanwendung für Hausbesitzer, Vermieter und Mieter"
   },
   "navigation": {
     "home": "Startseite",
     "properties": "Immobilien",
     "expenses": "Ausgaben",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "about": "Über uns",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "contact": "Kontakt"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "signup": "Registrieren"
+  },
+  "home": {
+    "hero": {
+      "description": "Verfolgen Sie Ausgaben, verwalten Sie Immobilien und handhaben Sie geteilte Kosten effizient mit Bricks & Mortar.",
+      "getStarted": "Loslegen",
+      "learnMore": "Mehr erfahren"
+    },
+    "features": {
+      "title": "Hauptfunktionen",
+      "expenseTracking": {
+        "title": "Ausgabenverfolgung",
+        "description": "Erfassen und kategorisieren Sie alle immobilienbezogenen Ausgaben einfach."
+      },
+      "propertyManagement": {
+        "title": "Immobilienverwaltung",
+        "description": "Verwalten Sie mehrere Immobilien mit detaillierten Einblicken und Berichten."
+      },
+      "sharedCosts": {
+        "title": "Geteilte Kosten",
+        "description": "Teilen Sie Ausgaben zwischen Mietern, Eigentümern und Immobilienverwaltern auf."
+      }
+    }
   }
 }

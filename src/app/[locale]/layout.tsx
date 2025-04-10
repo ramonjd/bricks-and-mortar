@@ -19,7 +19,7 @@ export default async function LocaleLayout({
 }) {
   // Enable static rendering
   unstable_setRequestLocale(locale);
-  
+
   // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale as any)) {
     notFound();
@@ -33,15 +33,11 @@ export default async function LocaleLayout({
   }
 
   return (
-    <html lang={locale}>
-      <body>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <div className="absolute top-4 right-4 z-50">
-            <LanguageSwitcher />
-          </div>
-          {children}
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <div className="absolute top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
+      {children}
+    </NextIntlClientProvider>
   );
 }

@@ -1,12 +1,47 @@
 {
   "common": {
     "appName": "Bricks & Mortar",
-    "welcome": "Welcome to Bricks & Mortar"
+    "welcome": "Welcome to Bricks & Mortar",
+    "allRightsReserved": "All rights reserved"
+  },
+  "metadata": {
+    "title": "Bricks & Mortar",
+    "description": "Property expense tracking application for homeowners, landlords, and renters"
   },
   "navigation": {
     "home": "Home",
     "properties": "Properties",
     "expenses": "Expenses",
-    "settings": "Settings"
+    "settings": "Settings",
+    "about": "About",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact"
+  },
+  "auth": {
+    "login": "Log in",
+    "signup": "Sign up"
+  },
+  "home": {
+    "hero": {
+      "description": "Track expenses, manage properties, and handle shared costs efficiently with Bricks & Mortar.",
+      "getStarted": "Get Started",
+      "learnMore": "Learn More"
+    },
+    "features": {
+      "title": "Key Features",
+      "expenseTracking": {
+        "title": "Expense Tracking",
+        "description": "Easily log and categorize all property-related expenses."
+      },
+      "propertyManagement": {
+        "title": "Property Management",
+        "description": "Manage multiple properties with detailed insights and reporting."
+      },
+      "sharedCosts": {
+        "title": "Shared Costs",
+        "description": "Split expenses between tenants, owners, and property managers."
+      }
+    }
   }
 }
