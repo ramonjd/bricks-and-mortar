@@ -26,13 +26,12 @@ export default function Home() {
                 Property Expense Management Made Simple
               </h1>
               <p className="text-lg md:text-xl max-w-3xl mx-auto mb-8">
-                Track expenses, manage properties, and handle shared costs efficiently with Bricks & Mortar.
+                Track expenses, manage properties, and handle shared costs efficiently with Bricks &
+                Mortar.
               </p>
               <div className="flex justify-center gap-4">
-                <Button size="lg">Get Started</Button>
-                <Button variant="outline" size="lg">
-                  Learn More
-                </Button>
+                <Button>Get Started</Button>
+                <Button variant="outline">Learn More</Button>
               </div>
             </div>
           </div>
