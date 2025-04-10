@@ -30,4 +30,4 @@ export interface PropertyMember {
   userId: string;
   role: 'owner' | 'tenant' | 'manager';
   joinedAt: Date;
-} 
+}

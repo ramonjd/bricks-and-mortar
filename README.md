@@ -29,17 +29,20 @@ A property expense tracking application for homeowners, landlords, and renters. 
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/bricks-and-mortar.git
    cd bricks-and-mortar
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Create a `.env.local` file in the root directory with your Supabase credentials:
+
    ```
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -86,4 +89,4 @@ src/
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.

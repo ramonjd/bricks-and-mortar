@@ -35,7 +35,7 @@ describe('Property Service', () => {
       }));
 
       const result = await getProperties('user1');
-      
+
       expect(result).toEqual([mockProperty]);
       expect(supabase.from).toHaveBeenCalledWith('properties');
     });
@@ -61,7 +61,7 @@ describe('Property Service', () => {
       }));
 
       const result = await getProperty('1');
-      
+
       expect(result).toEqual(mockProperty);
       expect(supabase.from).toHaveBeenCalledWith('properties');
     });
@@ -79,17 +79,17 @@ describe('Property Service', () => {
       (supabase.from as jest.Mock).mockImplementation(() => ({
         insert: jest.fn().mockReturnThis(),
         select: jest.fn().mockReturnThis(),
-        single: jest.fn().mockResolvedValue({ 
-          data: { ...newProperty, id: '2', createdAt: new Date() }, 
-          error: null 
+        single: jest.fn().mockResolvedValue({
+          data: { ...newProperty, id: '2', createdAt: new Date() },
+          error: null,
         }),
       }));
 
       const result = await createProperty(newProperty);
-      
+
       expect(result).toHaveProperty('id');
       expect(result.name).toBe(newProperty.name);
       expect(supabase.from).toHaveBeenCalledWith('properties');
     });
   });
-}); 
+});

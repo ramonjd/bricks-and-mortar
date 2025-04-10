@@ -5,4 +5,4 @@ export default function Home() {
       <p>Property expense tracking application</p>
     </main>
   );
-} 
+}

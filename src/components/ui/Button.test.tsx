@@ -25,10 +25,10 @@ describe('Button', () => {
   it('calls onClick handler when clicked', async () => {
     const handleClick = jest.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
-    
+
     const button = screen.getByRole('button', { name: /click me/i });
     await userEvent.click(button);
-    
+
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
-}); 
+});
