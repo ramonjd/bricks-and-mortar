@@ -21,7 +21,7 @@ export default function RegisterFormFields() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
-		
+
 		// Check if passwords match
 		if (password !== confirmPassword) {
 			setError(t('passwordsDoNotMatch'));
@@ -38,7 +38,7 @@ export default function RegisterFormFields() {
 
 		try {
 			const { user } = await signUp({ email, password });
-			
+
 			// Check if email confirmation is required
 			if (user?.identities?.length === 0) {
 				setIsSuccess(true);
@@ -69,9 +69,7 @@ export default function RegisterFormFields() {
 
 	return (
 		<form className="space-y-6" onSubmit={handleSubmit}>
-			{error && (
-				<div className="p-3 bg-red-50 text-red-800 rounded-md text-sm">{error}</div>
-			)}
+			{error && <div className="p-3 bg-red-50 text-red-800 rounded-md text-sm">{error}</div>}
 
 			<div>
 				<label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -110,7 +108,10 @@ export default function RegisterFormFields() {
 			</div>
 
 			<div>
-				<label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+				<label
+					htmlFor="confirmPassword"
+					className="block text-sm font-medium text-gray-700"
+				>
 					{t('confirmPassword')}
 				</label>
 				<div className="mt-1">
@@ -128,14 +129,10 @@ export default function RegisterFormFields() {
 			</div>
 
 			<div>
-				<Button 
-					type="submit" 
-					className="w-full"
-					disabled={isLoading}
-				>
+				<Button type="submit" className="w-full" disabled={isLoading}>
 					{isLoading ? t('creating') : t('createAccount')}
 				</Button>
 			</div>
 		</form>
 	);
-} 
+}

@@ -1,72 +1,75 @@
-import createMiddleware from 'next-intl/middleware';
-import { defaultLocale, locales } from '@/lib/i18n/config';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-
-const publicPages = ['/auth/login', '/auth/register', '/auth/forgot-password', '/auth/reset-password'];
-
-const intlMiddleware = createMiddleware({
-	// A list of all locales that are supported
-	locales,
-
-	// If this locale is matched, pathnames work without a prefix (e.g. `/about`)
-	defaultLocale,
-
-	// Always use locale prefix in the URL
-	localePrefix: 'always',
-
-	// Disable automatic locale detection
-	localeDetection: false,
-});
+import { NextResponse, type NextRequest } from 'next/server';
+import { defaultLocale, locales } from '@/lib/i18n/config';
 
 export async function middleware(request: NextRequest) {
-	const pathname = request.nextUrl.pathname;
-	
-	// Apply internationalization middleware
-	const response = intlMiddleware(request);
-	
-	// Create Supabase middleware client
+	let response = NextResponse.next({
+		request: {
+			headers: request.headers,
+		},
+	});
+
 	const supabase = createServerClient(
 		process.env.NEXT_PUBLIC_SUPABASE_URL!,
 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 		{
 			cookies: {
-				get: (name) => request.cookies.get(name)?.value,
-				set: (name, value, options) => response.cookies.set({ name, value, ...options }),
-				remove: (name, options) => response.cookies.set({ name, value: '', ...options }),
+				get(name: string) {
+					return request.cookies.get(name)?.value;
+				},
+				set(name: string, value: string, options: any) {
+					response.cookies.set({
+						name,
+						value,
+						...options,
+					});
+				},
+				remove(name: string, options: any) {
+					response.cookies.set({
+						name,
+						value: '',
+						...options,
+					});
+				},
 			},
 		}
 	);
-	
-	// Refresh session if expired
-	const { data: { session } } = await supabase.auth.getSession();
-	
+
+	const {
+		data: { session },
+	} = await supabase.auth.getSession();
+
+	// Get the pathname of the request (e.g. /, /protected)
+	const pathname = request.nextUrl.pathname;
+
 	// Get the locale from the path
-	const locale = request.nextUrl.pathname.split('/')[1];
-	
-	// Check if the path is prefixed with a locale
-	const isPathWithLocale = locales.some(loc => pathname.startsWith(`/${loc}/`));
-	const hasLocale = locales.includes(locale) && isPathWithLocale;
-	
-	// For authentication checks, we need to consider paths with locale prefixes
-	const isPublicPage = hasLocale && publicPages.some(page => pathname.endsWith(page));
-	const isAuthPage = hasLocale && pathname.includes('/auth/');
-	
-	// If logged in and on an auth page, redirect to dashboard
-	if (session && isAuthPage) {
-		return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+	const locale = pathname.split('/')[1];
+	const isLocaleValid = locales.includes(locale);
+
+	// If the pathname doesn't start with a locale, redirect to the default locale
+	if (!isLocaleValid) {
+		return NextResponse.redirect(new URL(`/${defaultLocale}${pathname}`, request.url));
 	}
-	
-	// If not logged in and not on a public page, redirect to login
-	if (!session && !isPublicPage && hasLocale && !pathname.endsWith(`/${locale}`)) {
-		return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url));
+
+	// Auth condition
+	const isAuthPage = pathname.includes('/auth/');
+	const isProtectedPage = pathname.includes('/dashboard');
+
+	if (session) {
+		// If the user is signed in and the current path is /auth/* redirect the user to /dashboard
+		if (isAuthPage) {
+			return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+		}
+	} else {
+		// If the user is not signed in and the current path is /dashboard redirect the user to /auth/login
+		if (isProtectedPage) {
+			return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url));
+		}
 	}
-	
+
 	return response;
 }
 
 export const config = {
-	// Skip all paths that should not be internationalized
-	matcher: ['/((?!api|_next|.*\\..*).*)'],
+	matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

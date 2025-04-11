@@ -46,9 +46,7 @@ export default function ForgotPasswordFormFields() {
 
 	return (
 		<form className="space-y-6" onSubmit={handleSubmit}>
-			{error && (
-				<div className="p-3 bg-red-50 text-red-800 rounded-md text-sm">{error}</div>
-			)}
+			{error && <div className="p-3 bg-red-50 text-red-800 rounded-md text-sm">{error}</div>}
 
 			<div>
 				<p className="text-sm text-gray-600 mb-4">{t('forgotPasswordDescription')}</p>
@@ -70,14 +68,10 @@ export default function ForgotPasswordFormFields() {
 			</div>
 
 			<div>
-				<Button 
-					type="submit" 
-					className="w-full"
-					disabled={isLoading}
-				>
+				<Button type="submit" className="w-full" disabled={isLoading}>
 					{isLoading ? t('sending') : t('resetPassword')}
 				</Button>
 			</div>
 		</form>
 	);
-} 
+}
