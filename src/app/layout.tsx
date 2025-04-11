@@ -6,6 +6,8 @@ export const metadata: Metadata = {
 	description: 'Property expense tracking application for homeowners, landlords, and renters',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function RootLayout({
 	children,
 	params,
