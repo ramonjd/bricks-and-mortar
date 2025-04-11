@@ -10,81 +10,88 @@ export default function Home({ params: { locale } }: { params: { locale: string 
 
 	return (
 		<div className="flex flex-col min-h-screen">
-			{/* Header */}
-			<header className="border-b py-4 px-6">
-				<div className="container mx-auto flex justify-between items-center">
-					<div className="font-bold text-xl">{t('common.appName')}</div>
-					<div className="space-x-4">
-						<Link
-							href={`/${locale}/login`}
-							className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-						>
-							{t('auth.login')}
-						</Link>
-						<Link
-							href={`/${locale}/register`}
-							className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-						>
-							{t('auth.signup')}
-						</Link>
-					</div>
-				</div>
-			</header>
-
 			{/* Hero Section */}
-			<main className="flex-grow">
-				<section className="py-16 px-6">
-					<div className="container mx-auto max-w-6xl">
-						<div className="text-center mb-12">
-							<h1 className="text-4xl md:text-5xl font-bold mb-6">
-								{t('common.welcome')}
-							</h1>
-							<p className="text-lg md:text-xl max-w-3xl mx-auto mb-8">
-								{t('home.hero.description')}
-							</p>
-							<div className="flex justify-center gap-4">
+			<section className="bg-white py-16">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="text-center">
+						<h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+							{t('home.hero.title')}
+						</h1>
+						<p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+							{t('home.hero.description')}
+						</p>
+						<div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
+							<div className="rounded-md shadow">
 								<Link
-									href={`/${locale}/(auth)/register`}
-									className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+									href={`/${locale}/register`}
+									className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10"
 								>
 									{t('getStarted')}
 								</Link>
-								<Link href={`/${locale}/about`}>{t('home.hero.learnMore')}</Link>
+							</div>
+							<div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
+								<Link
+									href={`/${locale}/about`}
+									className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
+								>
+									{t('home.hero.learnMore')}
+								</Link>
 							</div>
 						</div>
 					</div>
-				</section>
+				</div>
+			</section>
 
-				{/* Features Section */}
-				<section className="py-16 px-6 bg-gray-50">
-					<div className="container mx-auto max-w-6xl">
-						<h2 className="text-3xl font-bold text-center mb-12">
+			{/* Features Section */}
+			<section className="py-12 bg-gray-50">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="text-center">
+						<h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
 							{t('home.features.title')}
 						</h2>
-						<div className="grid md:grid-cols-3 gap-8">
-							{[
-								{
-									title: t('home.features.expenseTracking.title'),
-									description: t('home.features.expenseTracking.description'),
-								},
-								{
-									title: t('home.features.propertyManagement.title'),
-									description: t('home.features.propertyManagement.description'),
-								},
-								{
-									title: t('home.features.sharedCosts.title'),
-									description: t('home.features.sharedCosts.description'),
-								},
-							].map((feature, index) => (
-								<div key={index} className="p-6 border rounded-lg bg-white">
-									<h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-									<p>{feature.description}</p>
+					</div>
+
+					<div className="mt-10">
+						<div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+							{/* Feature 1 */}
+							<div className="bg-white overflow-hidden shadow rounded-lg">
+								<div className="px-4 py-5 sm:p-6">
+									<h3 className="text-lg font-medium text-gray-900">
+										{t('home.features.expenseTracking.title')}
+									</h3>
+									<p className="mt-2 text-base text-gray-500">
+										{t('home.features.expenseTracking.description')}
+									</p>
 								</div>
-							))}
+							</div>
+
+							{/* Feature 2 */}
+							<div className="bg-white overflow-hidden shadow rounded-lg">
+								<div className="px-4 py-5 sm:p-6">
+									<h3 className="text-lg font-medium text-gray-900">
+										{t('home.features.propertyManagement.title')}
+									</h3>
+									<p className="mt-2 text-base text-gray-500">
+										{t('home.features.propertyManagement.description')}
+									</p>
+								</div>
+							</div>
+
+							{/* Feature 3 */}
+							<div className="bg-white overflow-hidden shadow rounded-lg">
+								<div className="px-4 py-5 sm:p-6">
+									<h3 className="text-lg font-medium text-gray-900">
+										{t('home.features.sharedCosts.title')}
+									</h3>
+									<p className="mt-2 text-base text-gray-500">
+										{t('home.features.sharedCosts.description')}
+									</p>
+								</div>
+							</div>
 						</div>
 					</div>
-				</section>
-			</main>
+				</div>
+			</section>
 
 			{/* Footer */}
 			<footer className="border-t py-8 px-6">

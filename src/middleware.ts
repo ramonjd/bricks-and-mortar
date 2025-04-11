@@ -59,10 +59,11 @@ export async function middleware(request: NextRequest) {
 		pathname.includes('/forgot-password') ||
 		pathname.includes('/reset-password');
 	const isProtectedPage = pathname.includes('/dashboard');
+	const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/`;
 
 	if (session) {
-		// If the user is signed in and the current path is an auth page, redirect the user to /dashboard
-		if (isAuthPage) {
+		// If the user is signed in and the current path is an auth page or home page, redirect the user to /dashboard
+		if (isAuthPage || isHomePage) {
 			return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
 		}
 	} else {

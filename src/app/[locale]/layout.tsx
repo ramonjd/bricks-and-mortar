@@ -3,8 +3,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { ReactNode } from 'react';
 import { locales, Locale } from '@/lib/i18n/config';
 import { unstable_setRequestLocale } from 'next-intl/server';
+import { Header } from '@/components/layout/Header';
 import '../globals.css';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export function generateStaticParams() {
 	return locales.map((locale) => ({ locale }));
@@ -34,10 +34,10 @@ export default async function LocaleLayout({
 
 	return (
 		<NextIntlClientProvider locale={locale} messages={messages}>
-			<div className="absolute top-4 right-4 z-50">
-				<LanguageSwitcher />
+			<div className="flex flex-col min-h-screen">
+				<Header locale={locale} />
+				{children}
 			</div>
-			{children}
 		</NextIntlClientProvider>
 	);
 }
