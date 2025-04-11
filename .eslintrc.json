@@ -3,7 +3,15 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "parser": "@typescript-eslint/parser",
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": ["error", {
+      "useTabs": true,
+      "tabWidth": 4,
+      "singleQuote": true,
+      "trailingComma": "es5",
+      "semi": true,
+      "printWidth": 100,
+      "endOfLine": "auto"
+    }],
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-explicit-any": "warn",
     "react/prop-types": "off",
