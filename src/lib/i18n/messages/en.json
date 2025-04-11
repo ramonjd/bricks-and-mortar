@@ -18,6 +18,37 @@
     "terms": "Terms",
     "contact": "Contact"
   },
+  "about": {
+    "title": "About Bricks & Mortar",
+    "description": "Learn more about our mission and story",
+    "mission": {
+      "title": "Our Mission",
+      "content": "Our mission is to simplify property expense management for homeowners, landlords, and renters with innovative and user-friendly tools."
+    },
+    "story": {
+      "title": "Our Story",
+      "content": "Founded in 2023, Bricks & Mortar was created by a team of property owners and technology experts who experienced firsthand the challenges of tracking property expenses and managing shared costs."
+    },
+    "values": {
+      "title": "Our Values",
+      "transparency": {
+        "title": "Transparency",
+        "content": "We believe in clear, honest communication with our users and within our team."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "content": "We continuously improve our platform with new features and enhancements."
+      },
+      "reliability": {
+        "title": "Reliability",
+        "content": "We build reliable software that our users can depend on for their property management needs."
+      }
+    },
+    "team": {
+      "title": "Our Team",
+      "content": "Our diverse team of professionals is passionate about creating solutions that make property management easier and more efficient."
+    }
+  },
   "auth": {
     "login": "Log in",
     "signup": "Sign up",

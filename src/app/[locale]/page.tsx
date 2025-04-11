@@ -43,9 +43,11 @@ export default function Home({ params: { locale } }: { params: { locale: string 
 								<Link href={`/${locale}/auth/register`}>
 									<Button size="lg">{t('home.hero.getStarted')}</Button>
 								</Link>
-								<Button variant="outline" size="lg">
-									{t('home.hero.learnMore')}
-								</Button>
+								<Link href={`/${locale}/about`}>
+									<Button variant="outline" size="lg">
+										{t('home.hero.learnMore')}
+									</Button>
+								</Link>
 							</div>
 						</div>
 					</div>

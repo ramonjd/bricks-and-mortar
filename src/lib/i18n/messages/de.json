@@ -18,6 +18,37 @@
     "terms": "Nutzungsbedingungen",
     "contact": "Kontakt"
   },
+  "about": {
+    "title": "Über Bricks & Mortar",
+    "description": "Erfahren Sie mehr über unsere Mission und Geschichte",
+    "mission": {
+      "title": "Unsere Mission",
+      "content": "Unsere Mission ist es, die Verwaltung von Immobilienausgaben für Hausbesitzer, Vermieter und Mieter mit innovativen und benutzerfreundlichen Tools zu vereinfachen."
+    },
+    "story": {
+      "title": "Unsere Geschichte",
+      "content": "Bricks & Mortar wurde 2023 von einem Team aus Immobilienbesitzern und Technologieexperten gegründet, die aus erster Hand die Herausforderungen bei der Verfolgung von Immobilienausgaben und der Verwaltung gemeinsamer Kosten erlebt haben."
+    },
+    "values": {
+      "title": "Unsere Werte",
+      "transparency": {
+        "title": "Transparenz",
+        "content": "Wir glauben an klare, ehrliche Kommunikation mit unseren Nutzern und innerhalb unseres Teams."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "content": "Wir verbessern unsere Plattform kontinuierlich mit neuen Funktionen und Verbesserungen."
+      },
+      "reliability": {
+        "title": "Zuverlässigkeit",
+        "content": "Wir entwickeln zuverlässige Software, auf die sich unsere Nutzer für ihre Immobilienverwaltungsbedürfnisse verlassen können."
+      }
+    },
+    "team": {
+      "title": "Unser Team",
+      "content": "Unser vielfältiges Team von Fachleuten ist begeistert davon, Lösungen zu schaffen, die die Immobilienverwaltung einfacher und effizienter machen."
+    }
+  },
   "auth": {
     "login": "Anmelden",
     "signup": "Registrieren",
