@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic';
-
 import { unstable_setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
