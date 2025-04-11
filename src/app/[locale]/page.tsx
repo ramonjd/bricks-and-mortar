@@ -16,10 +16,14 @@ export default function Home({ params: { locale } }: { params: { locale: string 
 				<div className="container mx-auto flex justify-between items-center">
 					<div className="font-bold text-xl">{t('common.appName')}</div>
 					<div className="space-x-4">
-						<Button variant="outline" className="px-5">
-							{t('auth.login')}
-						</Button>
-						<Button>{t('auth.signup')}</Button>
+						<Link href={`/${locale}/auth/login`}>
+							<Button variant="outline" className="px-5">
+								{t('auth.login')}
+							</Button>
+						</Link>
+						<Link href={`/${locale}/auth/register`}>
+							<Button>{t('auth.signup')}</Button>
+						</Link>
 					</div>
 				</div>
 			</header>
@@ -36,7 +40,9 @@ export default function Home({ params: { locale } }: { params: { locale: string 
 								{t('home.hero.description')}
 							</p>
 							<div className="flex justify-center gap-4">
-								<Button size="lg">{t('home.hero.getStarted')}</Button>
+								<Link href={`/${locale}/auth/register`}>
+									<Button size="lg">{t('home.hero.getStarted')}</Button>
+								</Link>
 								<Button variant="outline" size="lg">
 									{t('home.hero.learnMore')}
 								</Button>
@@ -87,16 +93,16 @@ export default function Home({ params: { locale } }: { params: { locale: string 
 							</p>
 						</div>
 						<div className="flex gap-6">
-							<Link href="/about" className="text-sm hover:underline">
+							<Link href={`/${locale}/about`} className="text-sm hover:underline">
 								{t('navigation.about')}
 							</Link>
-							<Link href="/privacy" className="text-sm hover:underline">
+							<Link href={`/${locale}/privacy`} className="text-sm hover:underline">
 								{t('navigation.privacy')}
 							</Link>
-							<Link href="/terms" className="text-sm hover:underline">
+							<Link href={`/${locale}/terms`} className="text-sm hover:underline">
 								{t('navigation.terms')}
 							</Link>
-							<Link href="/contact" className="text-sm hover:underline">
+							<Link href={`/${locale}/contact`} className="text-sm hover:underline">
 								{t('navigation.contact')}
 							</Link>
 						</div>
