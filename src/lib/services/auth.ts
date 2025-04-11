@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
-import { AuthError, User } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
 
 export type AuthFormData = {
 	email: string;

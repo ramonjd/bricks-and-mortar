@@ -1,9 +1,10 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { defaultLocale, locales } from '@/lib/i18n/config';
+import { defaultLocale, Locale, locales } from '@/lib/i18n/config';
+import { CookieOptions } from '@supabase/ssr';
 
 export async function middleware(request: NextRequest) {
-	let response = NextResponse.next({
+	const response = NextResponse.next({
 		request: {
 			headers: request.headers,
 		},
@@ -17,14 +18,14 @@ export async function middleware(request: NextRequest) {
 				get(name: string) {
 					return request.cookies.get(name)?.value;
 				},
-				set(name: string, value: string, options: any) {
+				set(name: string, value: string, options: CookieOptions) {
 					response.cookies.set({
 						name,
 						value,
 						...options,
 					});
 				},
-				remove(name: string, options: any) {
+				remove(name: string, options: CookieOptions) {
 					response.cookies.set({
 						name,
 						value: '',
@@ -44,7 +45,7 @@ export async function middleware(request: NextRequest) {
 
 	// Get the locale from the path
 	const locale = pathname.split('/')[1];
-	const isLocaleValid = locales.includes(locale);
+	const isLocaleValid = locales.includes(locale as Locale);
 
 	// If the pathname doesn't start with a locale, redirect to the default locale
 	if (!isLocaleValid) {
