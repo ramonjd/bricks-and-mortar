@@ -59,13 +59,43 @@ The application will be available at [http://localhost:3000](http://localhost:30
 
 ### Running Tests
 
+The project includes several types of tests to ensure code quality and functionality:
+
+#### Unit and Component Tests
 ```bash
-# Run all tests
+# Run all unit and component tests
 npm test
 
-# Run tests in watch mode
+# Run tests in watch mode (useful during development)
 npm run test:watch
 ```
+
+#### End-to-End Tests
+```bash
+# Install Playwright browsers and dependencies (first time only)
+npm run playwright:install
+
+# Run all end-to-end tests
+npm run test:e2e
+```
+
+#### Code Quality
+```bash
+# Run ESLint to check code quality
+npm run lint
+
+# Format code using Prettier
+npm run format
+```
+
+### Continuous Integration
+The project uses GitHub Actions for continuous integration. The CI pipeline runs:
+- Linting checks
+- Unit and component tests
+- End-to-end tests
+- Build verification
+
+Test reports and artifacts are automatically uploaded and available in the GitHub Actions interface.
 
 ### Project Structure
 
