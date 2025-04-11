@@ -19,7 +19,7 @@ export default async function DashboardPage({
 
 	// Check if user is authenticated
 	if (!session) {
-		redirect(`/${locale}/auth/login`);
+		redirect(`/${locale}/login`);
 	}
 
 	const t = await getTranslations();

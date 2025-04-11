@@ -5,6 +5,7 @@ import { useLocale } from 'next-intl';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/Button';
 import { supabase } from '@/lib/supabase/client';
+import Link from 'next/link';
 
 export default function LoginFormFields() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -80,6 +81,20 @@ export default function LoginFormFields() {
 			<Button type="submit" className="w-full" disabled={isLoading}>
 				{isLoading ? t('loggingIn') : t('login')}
 			</Button>
+			<div className="text-sm">
+				<Link
+					href="/forgot-password"
+					className="font-semibold text-primary hover:text-primary/80"
+				>
+					{t('forgotPassword')}
+				</Link>
+			</div>
+			<div className="text-sm">
+				{t('noAccount')}{' '}
+				<Link href="/register" className="font-semibold text-primary hover:text-primary/80">
+					{t('createAccount')}
+				</Link>
+			</div>
 		</form>
 	);
 }

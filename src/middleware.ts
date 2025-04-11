@@ -53,18 +53,22 @@ export async function middleware(request: NextRequest) {
 	}
 
 	// Auth condition
-	const isAuthPage = pathname.includes('/auth/');
+	const isAuthPage =
+		pathname.includes('/login') ||
+		pathname.includes('/register') ||
+		pathname.includes('/forgot-password') ||
+		pathname.includes('/reset-password');
 	const isProtectedPage = pathname.includes('/dashboard');
 
 	if (session) {
-		// If the user is signed in and the current path is /auth/* redirect the user to /dashboard
+		// If the user is signed in and the current path is an auth page, redirect the user to /dashboard
 		if (isAuthPage) {
 			return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
 		}
 	} else {
-		// If the user is not signed in and the current path is /dashboard redirect the user to /auth/login
+		// If the user is not signed in and the current path is /dashboard redirect the user to /login
 		if (isProtectedPage) {
-			return NextResponse.redirect(new URL(`/${locale}/auth/login`, request.url));
+			return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
 		}
 	}
 

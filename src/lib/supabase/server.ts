@@ -1,6 +1,5 @@
-import { createServerClient } from '@supabase/ssr';
+import { createServerClient, CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { CookieOptions } from '@supabase/ssr';
 
 export function createClient() {
 	const cookieStore = cookies();

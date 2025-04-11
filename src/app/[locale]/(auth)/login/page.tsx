@@ -13,25 +13,6 @@ export default function LoginPage({ params: { locale } }: { params: { locale: st
 	return (
 		<AuthLayout title={t('login')} subtitle={t('loginSubtitle')}>
 			<LoginForm />
-			<div className="text-center mt-6">
-				<p className="text-sm text-gray-600">
-					{t('noAccount')}{' '}
-					<Link
-						href={`/${locale}/auth/register`}
-						className="text-blue-600 hover:underline font-medium"
-					>
-						{t('createAccount')}
-					</Link>
-				</p>
-				<p className="text-sm text-gray-600 mt-2">
-					<Link
-						href={`/${locale}/auth/forgot-password`}
-						className="text-blue-600 hover:underline font-medium"
-					>
-						{t('forgotPassword')}
-					</Link>
-				</p>
-			</div>
 		</AuthLayout>
 	);
 }

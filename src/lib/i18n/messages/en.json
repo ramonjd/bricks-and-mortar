@@ -96,24 +96,25 @@
   },
   "home": {
     "hero": {
-      "description": "Track expenses, manage properties, and handle shared costs efficiently with Bricks & Mortar.",
-      "getStarted": "Get Started",
-      "learnMore": "Learn More"
+      "title": "Welcome to Bricks & Mortar",
+      "description": "The ultimate solution for managing your real estate investments. Track expenses, manage tenancies, and optimize your returns.",
+      "learnMore": "Learn more"
     },
     "features": {
-      "title": "Key Features",
+      "title": "Features",
       "expenseTracking": {
         "title": "Expense Tracking",
-        "description": "Easily log and categorize all property-related expenses."
+        "description": "Track all expenses related to your properties in one place."
       },
       "propertyManagement": {
         "title": "Property Management",
-        "description": "Manage multiple properties with detailed insights and reporting."
+        "description": "Easily manage your properties, tenants, and contracts."
       },
       "sharedCosts": {
         "title": "Shared Costs",
-        "description": "Split expenses between tenants, owners, and property managers."
+        "description": "Fairly split costs between co-owners and track payments."
       }
     }
-  }
+  },
+  "getStarted": "Get Started"
 }

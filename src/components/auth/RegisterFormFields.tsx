@@ -60,9 +60,7 @@ export default function RegisterFormFields() {
 			<div className="text-center">
 				<h3 className="mb-4 text-lg font-medium text-gray-900">{t('checkYourEmail')}</h3>
 				<p className="text-gray-600 mb-6">{t('emailConfirmationSent')}</p>
-				<Button onClick={() => router.push(`/${locale}/auth/login`)}>
-					{t('backToLogin')}
-				</Button>
+				<Button onClick={() => router.push(`/${locale}/login`)}>{t('backToLogin')}</Button>
 			</div>
 		);
 	}

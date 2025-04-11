@@ -1,7 +1,6 @@
 import { unstable_setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { Button } from '@/components/ui/Button';
 
 export default function About({ params: { locale } }: { params: { locale: string } }) {
 	// Enable static rendering
@@ -18,13 +17,17 @@ export default function About({ params: { locale } }: { params: { locale: string
 						<Link href={`/${locale}`}>{t('common.appName')}</Link>
 					</div>
 					<div className="space-x-4">
-						<Link href={`/${locale}/auth/login`}>
-							<Button variant="outline" className="px-5">
-								{t('auth.login')}
-							</Button>
+						<Link
+							href={`/${locale}/login`}
+							className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+						>
+							{t('auth.login')}
 						</Link>
-						<Link href={`/${locale}/auth/register`}>
-							<Button>{t('auth.signup')}</Button>
+						<Link
+							href={`/${locale}/register`}
+							className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+						>
+							{t('auth.signup')}
 						</Link>
 					</div>
 				</div>
@@ -83,8 +86,11 @@ export default function About({ params: { locale } }: { params: { locale: string
 
 					{/* CTA */}
 					<div className="text-center mt-12">
-						<Link href={`/${locale}/auth/register`}>
-							<Button size="lg">{t('home.hero.getStarted')}</Button>
+						<Link
+							href={`/${locale}/register`}
+							className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+						>
+							{t('auth.signup')}
 						</Link>
 					</div>
 				</div>

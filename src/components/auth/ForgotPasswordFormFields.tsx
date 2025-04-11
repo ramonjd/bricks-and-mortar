@@ -37,7 +37,7 @@ export default function ForgotPasswordFormFields() {
 			<div className="text-center">
 				<h3 className="mb-4 text-lg font-medium text-gray-900">{t('checkYourEmail')}</h3>
 				<p className="text-gray-600 mb-6">{t('resetEmailSent')}</p>
-				<Button onClick={() => router.push(`/${locale}/auth/login`)}>
+				<Button onClick={() => router.push(`/${locale}/(auth)/login`)}>
 					{t('backToLogin')}
 				</Button>
 			</div>
