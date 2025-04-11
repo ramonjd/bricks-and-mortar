@@ -1,7 +1,7 @@
 import { unstable_setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { LoginForm } from '@/components/auth/LoginForm';
+import LoginForm from '@/components/auth/LoginForm';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 
 export default function LoginPage({ params: { locale } }: { params: { locale: string } }) {

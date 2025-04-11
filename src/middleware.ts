@@ -2,7 +2,7 @@ import createMiddleware from 'next-intl/middleware';
 import { defaultLocale, locales } from '@/lib/i18n/config';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 
 const publicPages = ['/auth/login', '/auth/register', '/auth/forgot-password', '/auth/reset-password'];
 
@@ -27,7 +27,17 @@ export async function middleware(request: NextRequest) {
 	const response = intlMiddleware(request);
 	
 	// Create Supabase middleware client
-	const supabase = createMiddlewareClient({ req: request, res: response });
+	const supabase = createServerClient(
+		process.env.NEXT_PUBLIC_SUPABASE_URL!,
+		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+		{
+			cookies: {
+				get: (name) => request.cookies.get(name)?.value,
+				set: (name, value, options) => response.cookies.set({ name, value, ...options }),
+				remove: (name, options) => response.cookies.set({ name, value: '', ...options }),
+			},
+		}
+	);
 	
 	// Refresh session if expired
 	const { data: { session } } = await supabase.auth.getSession();
