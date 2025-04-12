@@ -37,15 +37,15 @@ export default function RegisterFormFields() {
 		setIsLoading(true);
 
 		try {
-			const { user } = await signUp({ email, password });
+			const { user, session } = await signUp({ email, password, locale });
 
-			// Check if email confirmation is required
-			if (user?.identities?.length === 0) {
-				setIsSuccess(true);
-			} else {
-				// Auto-login successful, redirect to dashboard
+			// If we have a session, the user was auto-confirmed
+			if (session) {
 				router.push(`/${locale}/dashboard`);
 				router.refresh();
+			} else {
+				// No session means email confirmation is required
+				setIsSuccess(true);
 			}
 		} catch (err) {
 			console.error('Registration error:', err);

@@ -96,7 +96,9 @@
     "accountActivated": "Your account has been successfully activated!",
     "invalidConfirmationLink": "Invalid confirmation link",
     "errorConfirmingEmail": "There was an error confirming your email",
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "verificationExpired": "The verification link has expired. Please request a new one.",
+    "verificationExpiredDescription": "For security reasons, email verification links expire after a short time. Please try signing up again to receive a new verification link."
   },
   "dashboard": {
     "title": "Dashboard",

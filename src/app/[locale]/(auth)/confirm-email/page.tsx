@@ -10,7 +10,7 @@ export default function ConfirmEmailPage({ params: { locale } }: { params: { loc
 	const t = useTranslations('auth');
 
 	return (
-		<AuthLayout title={t('confirmingEmail')} subtitle={t('pleaseWait')}>
+		<AuthLayout title={t('confirmingEmail')}>
 			<EmailConfirmation />
 		</AuthLayout>
 	);
