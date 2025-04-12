@@ -10,6 +10,9 @@ export async function signUp({ email, password }: AuthFormData) {
 	const { data, error } = await supabase.auth.signUp({
 		email,
 		password,
+		options: {
+			emailRedirectTo: `${window.location.origin}/confirm-email`,
+		},
 	});
 
 	if (error) {
