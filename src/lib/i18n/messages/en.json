@@ -4,7 +4,9 @@
     "welcome": "Welcome to Bricks & Mortar",
     "allRightsReserved": "All rights reserved",
     "save": "Save",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete"
   },
   "metadata": {
     "title": "Bricks & Mortar",
@@ -138,6 +140,11 @@
   },
   "profile": {
     "title": "User Profile",
+    "deleteAccount": "Delete Account",
+    "confirmDelete": "Delete Account",
+    "confirmDeleteButton": "Confirm Delete",
+    "deleteAccountConfirmation": "Are you sure you want to delete your account?",
+    "deleteAccountWarning": "If you delete your account, all your data and information will be deleted. This action is irreversible.",
     "name": "Full Name",
     "phone": "Phone Number",
     "avatarAlt": "User avatar",
@@ -148,7 +155,9 @@
     "errors": {
       "invalidFileType": "Invalid file type. Please upload a JPG, PNG, or GIF image.",
       "uploadFailed": "Failed to upload image. Please try again.",
-      "saveFailed": "Failed to save profile. Please try again."
+      "saveFailed": "Failed to save profile. Please try again.",
+      "deleteFailed": "Delete Failed",  
+      "deleteFailedDescription": "There was an error deleting your account. Please try again."
     }
   }
 }

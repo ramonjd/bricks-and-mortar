@@ -4,7 +4,9 @@
     "welcome": "Willkommen bei Bricks & Mortar",
     "allRightsReserved": "Alle Rechte vorbehalten",
     "save": "Speichern",
-    "saving": "Speichern..."
+    "saving": "Speichern...",
+    "cancel": "Abbrechen",
+    "delete": "Löschen"
   },
   "metadata": {
     "title": "Bricks & Mortar",
@@ -136,6 +138,11 @@
   },
   "profile": {
     "title": "Benutzerprofil",
+    "deleteAccount": "Konto löschen",
+    "confirmDelete": "Konto löschen",
+    "confirmDeleteButton": "Bestätigen",
+    "deleteAccountConfirmation": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",
+    "deleteAccountWarning": "Wenn Sie Ihr Konto löschen, werden alle Ihre Daten und Informationen gelöscht. Diese Aktion ist unumkehrbar.",
     "name": "Vollständiger Name",
     "phone": "Telefonnummer",
     "avatarAlt": "Benutzeravatar",
@@ -146,7 +153,9 @@
     "errors": {
       "invalidFileType": "Ungültiger Dateityp. Bitte laden Sie ein JPG-, PNG- oder GIF-Bild hoch.",
       "uploadFailed": "Fehler beim Hochladen des Bildes. Bitte versuchen Sie es erneut.",
-      "saveFailed": "Fehler beim Speichern des Profils. Bitte versuchen Sie es erneut."
+      "saveFailed": "Fehler beim Speichern des Profils. Bitte versuchen Sie es erneut.",
+      "deleteFailed": "Konto löschen fehlgeschlagen",
+      "deleteFailedDescription": "Es ist ein Fehler beim Löschen des Kontos aufgetreten. Bitte versuchen Sie es erneut."  
     }
   }
 }
