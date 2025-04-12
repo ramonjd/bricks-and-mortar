@@ -2,7 +2,9 @@
   "common": {
     "appName": "Bricks & Mortar",
     "welcome": "Welcome to Bricks & Mortar",
-    "allRightsReserved": "All rights reserved"
+    "allRightsReserved": "All rights reserved",
+    "save": "Save",
+    "saving": "Saving..."
   },
   "metadata": {
     "title": "Bricks & Mortar",
@@ -16,7 +18,8 @@
     "about": "About",
     "privacy": "Privacy",
     "terms": "Terms",
-    "contact": "Contact"
+    "contact": "Contact",
+    "profile": "Profile"
   },
   "about": {
     "title": "About Bricks & Mortar",
@@ -132,5 +135,20 @@
     "title": "Page Not Found",
     "description": "The page you are looking for does not exist or has been moved.",
     "backHome": "Back to Home"
+  },
+  "profile": {
+    "title": "User Profile",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "avatarAlt": "User avatar",
+    "clickToUpload": "Click to upload a profile picture",
+    "supportedFormats": "Supported formats: JPG, PNG, GIF",
+    "emailCannotBeChanged": "Email cannot be changed",
+    "profileSaved": "Profile saved successfully",
+    "errors": {
+      "invalidFileType": "Invalid file type. Please upload a JPG, PNG, or GIF image.",
+      "uploadFailed": "Failed to upload image. Please try again.",
+      "saveFailed": "Failed to save profile. Please try again."
+    }
   }
 }
