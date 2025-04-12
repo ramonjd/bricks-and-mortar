@@ -1,7 +1,7 @@
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { locales } from '@/lib/i18n/config';
+import { locales, type Locale } from '@/lib/i18n/config';
 
 export async function GET(request: Request) {
 	console.error('[Route Handler] Starting confirm-email handler');
@@ -9,10 +9,10 @@ export async function GET(request: Request) {
 
 	// Extract locale from the URL path
 	const pathSegments = requestUrl.pathname.split('/').filter(Boolean);
-	const locale = pathSegments[0];
+	const locale = pathSegments[0] as Locale;
 
 	// Validate locale
-	const isValidLocale = locales.includes(locale as any);
+	const isValidLocale = locales.includes(locale);
 	if (!isValidLocale) {
 		console.error('[Route Handler] Invalid locale:', locale);
 		return NextResponse.redirect(`${requestUrl.origin}/en/login?error=invalid_locale`);

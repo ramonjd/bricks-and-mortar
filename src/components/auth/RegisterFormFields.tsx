@@ -37,7 +37,7 @@ export default function RegisterFormFields() {
 		setIsLoading(true);
 
 		try {
-			const { user, session } = await signUp({ email, password, locale });
+			const { session } = await signUp({ email, password, locale });
 
 			// If we have a session, the user was auto-confirmed
 			if (session) {

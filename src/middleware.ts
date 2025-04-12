@@ -1,7 +1,6 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { locales, defaultLocale, type Locale } from '@/lib/i18n/config';
+import { locales, defaultLocale } from '@/lib/i18n/config';
 
 export async function middleware(request: NextRequest) {
 	console.error('[Middleware] Request URL:', request.nextUrl.toString());
@@ -15,14 +14,6 @@ export async function middleware(request: NextRequest) {
 
 	// Create a response object
 	const response = NextResponse.next();
-
-	// Create a Supabase client with the response
-	const supabase = createMiddlewareClient({ req: request, res: response });
-
-	// Get the user's session
-	const {
-		data: { session },
-	} = await supabase.auth.getSession();
 
 	// Handle locale
 	const pathname = request.nextUrl.pathname;
