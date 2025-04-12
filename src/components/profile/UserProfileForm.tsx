@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import DeleteAccountDialog from './DeleteAccountDialog';
 
 type UserProfile = {
 	id?: string;
@@ -235,7 +236,8 @@ export default function UserProfileForm({ userId, email, initialProfile }: UserP
 					</div>
 				)}
 
-				<div className="flex justify-end">
+				<div className="flex justify-between mt-6">
+					<DeleteAccountDialog userId={userId} />
 					<Button type="submit" disabled={saving || uploading}>
 						{saving ? t('common.saving') : t('common.save')}
 					</Button>
