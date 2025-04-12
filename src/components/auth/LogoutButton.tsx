@@ -3,18 +3,18 @@
 import { useState } from 'react';
 import { useLocale } from 'next-intl';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonProps } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase/client';
 
 type LogoutButtonProps = {
-	variant?: 'primary' | 'secondary' | 'outline';
-	size?: 'sm' | 'md' | 'lg';
+	variant?: ButtonProps['variant'];
+	size?: ButtonProps['size'];
 	className?: string;
 };
 
 export function LogoutButton({
 	variant = 'outline',
-	size = 'md',
+	size = 'default',
 	className = '',
 }: LogoutButtonProps) {
 	const [isLoading, setIsLoading] = useState(false);
