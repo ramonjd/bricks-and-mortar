@@ -6,20 +6,20 @@ import { locales } from '@/lib/i18n/config';
 export async function GET(request: Request) {
 	console.error('[Route Handler] Starting confirm-email handler');
 	const requestUrl = new URL(request.url);
-	
+
 	// Extract locale from the URL path
 	const pathSegments = requestUrl.pathname.split('/').filter(Boolean);
 	const locale = pathSegments[0];
-	
+
 	// Validate locale
 	const isValidLocale = locales.includes(locale as any);
 	if (!isValidLocale) {
 		console.error('[Route Handler] Invalid locale:', locale);
 		return NextResponse.redirect(`${requestUrl.origin}/en/login?error=invalid_locale`);
 	}
-	
+
 	console.error('[Route Handler] Using locale:', locale);
-	
+
 	const code = requestUrl.searchParams.get('code');
 	const token_hash = requestUrl.searchParams.get('token_hash');
 	const type = requestUrl.searchParams.get('type');
@@ -80,4 +80,4 @@ export async function GET(request: Request) {
 
 	// If we get here, verification was successful
 	return NextResponse.redirect(`${requestUrl.origin}/${locale}/login?message=email_verified`);
-} 
+}
