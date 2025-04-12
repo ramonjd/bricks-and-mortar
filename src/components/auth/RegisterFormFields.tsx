@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { signUp } from '@/lib/services/auth';
 
 export default function RegisterFormFields() {
