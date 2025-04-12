@@ -87,7 +87,16 @@
     "continueToDashboard": "Continue to dashboard",
     "enterEmail": "Enter your email",
     "enterPassword": "Enter your password",
-    "updatePassword": "Update password"
+    "updatePassword": "Update password",
+    "confirmingEmail": "Confirming your email",
+    "emailConfirmed": "Email confirmed",
+    "confirmationFailed": "Confirmation failed",
+    "pleaseWait": "Please wait while we verify your email",
+    "loginToYourAccount": "Your email has been confirmed, please log in to your account",
+    "accountActivated": "Your account has been successfully activated!",
+    "invalidConfirmationLink": "Invalid confirmation link",
+    "errorConfirmingEmail": "There was an error confirming your email",
+    "tryAgain": "Try again"
   },
   "dashboard": {
     "title": "Dashboard",

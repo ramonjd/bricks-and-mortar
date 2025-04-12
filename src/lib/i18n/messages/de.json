@@ -87,7 +87,16 @@
     "continueToDashboard": "Zum Dashboard",
     "enterEmail": "Geben Sie Ihre E-Mail ein",
     "enterPassword": "Geben Sie Ihr Passwort ein",
-    "updatePassword": "Passwort aktualisieren"
+    "updatePassword": "Passwort aktualisieren",
+    "confirmingEmail": "E-Mail-Bestätigung",
+    "emailConfirmed": "E-Mail bestätigt",
+    "confirmationFailed": "Bestätigung fehlgeschlagen",
+    "pleaseWait": "Bitte warten Sie, während wir Ihre E-Mail verifizieren",
+    "loginToYourAccount": "Ihre E-Mail wurde bestätigt, bitte melden Sie sich bei Ihrem Konto an",
+    "accountActivated": "Ihr Konto wurde erfolgreich aktiviert!",
+    "invalidConfirmationLink": "Ungültiger Bestätigungslink",
+    "errorConfirmingEmail": "Bei der Bestätigung Ihrer E-Mail ist ein Fehler aufgetreten",
+    "tryAgain": "Erneut versuchen"
   },
   "dashboard": {
     "title": "Dashboard",
