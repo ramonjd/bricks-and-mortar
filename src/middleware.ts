@@ -1,76 +1,40 @@
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
-import { defaultLocale, Locale, locales } from '@/lib/i18n/config';
-import { CookieOptions } from '@supabase/ssr';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { locales, defaultLocale } from '@/lib/i18n/config';
 
 export async function middleware(request: NextRequest) {
-	const response = NextResponse.next({
-		request: {
-			headers: request.headers,
-		},
-	});
+	console.error('[Middleware] Request URL:', request.nextUrl.toString());
 
-	const supabase = createServerClient(
-		process.env.NEXT_PUBLIC_SUPABASE_URL!,
-		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-		{
-			cookies: {
-				get(name: string) {
-					return request.cookies.get(name)?.value;
-				},
-				set(name: string, value: string, options: CookieOptions) {
-					response.cookies.set({
-						name,
-						value,
-						...options,
-					});
-				},
-				remove(name: string, options: CookieOptions) {
-					response.cookies.set({
-						name,
-						value: '',
-						...options,
-					});
-				},
-			},
-		}
-	);
-
-	const {
-		data: { session },
-	} = await supabase.auth.getSession();
-
-	// Get the pathname of the request (e.g. /, /protected)
-	const pathname = request.nextUrl.pathname;
-
-	// Get the locale from the path
-	const locale = pathname.split('/')[1];
-	const isLocaleValid = locales.includes(locale as Locale);
-
-	// If the pathname doesn't start with a locale, redirect to the default locale
-	if (!isLocaleValid) {
-		return NextResponse.redirect(new URL(`/${defaultLocale}${pathname}`, request.url));
+	// Check if the request is for the confirm-email page
+	if (request.nextUrl.pathname.includes('/confirm-email')) {
+		console.error('[Middleware] Handling confirm-email request');
+		// For confirm-email, we want to let the route handler handle it
+		return NextResponse.next();
 	}
 
-	// Auth condition
-	const isAuthPage =
-		pathname.includes('/login') ||
-		pathname.includes('/register') ||
-		pathname.includes('/forgot-password') ||
-		pathname.includes('/reset-password');
-	const isProtectedPage = pathname.includes('/dashboard');
-	const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/`;
+	// Create a response object
+	const response = NextResponse.next();
 
-	if (session) {
-		// If the user is signed in and the current path is an auth page or home page, redirect the user to /dashboard
-		if (isAuthPage || isHomePage) {
-			return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
-		}
-	} else {
-		// If the user is not signed in and the current path is /dashboard redirect the user to /login
-		if (isProtectedPage) {
-			return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
-		}
+	// Handle locale
+	const pathname = request.nextUrl.pathname;
+	const pathnameIsMissingLocale = locales.every(
+		(locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+	);
+
+	// Redirect if there is no locale
+	if (pathnameIsMissingLocale) {
+		console.error(
+			'[Middleware] Missing locale, redirecting to:',
+			`/${defaultLocale}${pathname}`
+		);
+		// e.g. incoming request is /products
+		// The new URL is now /en/products
+		return NextResponse.redirect(
+			new URL(
+				`/${defaultLocale}${pathname.startsWith('/') ? '' : ''}${pathname}`,
+				request.url
+			)
+		);
 	}
 
 	return response;

@@ -85,11 +85,11 @@ export function Header({ locale }: HeaderProps) {
 									</Link>
 								</>
 							)}
-							<div className="absolute top-4 right-4 z-50">
-								<LanguageSwitcher />
-							</div>
 						</>
 					)}
+					<div className="absolute top-4 right-4 z-50">
+						<LanguageSwitcher />
+					</div>
 				</div>
 			</div>
 		</header>

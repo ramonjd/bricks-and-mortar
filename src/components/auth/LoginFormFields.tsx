@@ -91,7 +91,10 @@ export default function LoginFormFields() {
 			</div>
 			<div className="text-sm">
 				{t('noAccount')}{' '}
-				<Link href="/register" className="font-semibold text-primary hover:text-primary/80">
+				<Link
+					href={`/${locale}/register`}
+					className="font-semibold text-primary hover:text-primary/80"
+				>
 					{t('createAccount')}
 				</Link>
 			</div>
