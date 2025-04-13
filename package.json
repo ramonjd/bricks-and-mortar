@@ -8,13 +8,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"{src,e2e}/**/*.{ts,tsx}\"",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
     "playwright:install": "playwright install --with-deps"
   },
   "dependencies": {
+    "@radix-ui/react-checkbox": "^1.1.5",
+    "@radix-ui/react-dialog": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.0",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.6.1",
@@ -49,7 +52,6 @@
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.31",
     "prettier": "^3.2.0",
-    "supabase": "^2.20.12",
     "tailwindcss": "^3.4.1",
     "typescript": "~5.3.3"
   }
