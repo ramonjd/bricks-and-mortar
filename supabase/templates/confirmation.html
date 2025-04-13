@@ -1,0 +1,29 @@
+
+{{ if eq .Data.locale "en" }}
+
+<h2>Confirm your signup</h2>
+<p>A signup confirmation link has been sent to {{ .Email }} from {{ .SiteURL }}</p>
+
+<p>Follow this link to confirm your user:</p>
+<p>
+  <a
+    href="{{ .SiteURL }}/en/confirm-email?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}"
+    >Confirm your email</a
+  >
+</p>
+
+{{ else if eq .Data.locale "de" }}
+
+<h2>Anmeldung bestätigen</h2>
+<p>A signup confirmation link has been sent to {{ .Email }} from {{ .SiteURL }}</p>
+
+<p>Follow this Deutsch to confirm your user:</p>
+<p>
+  <a
+    href="{{ .SiteURL }}/de/confirm-email?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}"
+    >Confirm your Deutsch</a
+  >
+</p>
+
+
+{{ end }}
