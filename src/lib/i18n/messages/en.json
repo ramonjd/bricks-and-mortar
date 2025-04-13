@@ -1,163 +1,174 @@
 {
-  "common": {
-    "appName": "Bricks & Mortar",
-    "welcome": "Welcome to Bricks & Mortar",
-    "allRightsReserved": "All rights reserved",
-    "save": "Save",
-    "saving": "Saving...",
-    "cancel": "Cancel",
-    "delete": "Delete"
-  },
-  "metadata": {
-    "title": "Bricks & Mortar",
-    "description": "Property expense tracking application for homeowners, landlords, and renters"
-  },
-  "navigation": {
-    "home": "Home",
-    "properties": "Properties",
-    "expenses": "Expenses",
-    "settings": "Settings",
-    "about": "About",
-    "privacy": "Privacy",
-    "terms": "Terms",
-    "contact": "Contact",
-    "profile": "Profile"
-  },
-  "about": {
-    "title": "About Bricks & Mortar",
-    "description": "Learn more about our mission and story",
-    "mission": {
-      "title": "Our Mission",
-      "content": "Our mission is to simplify property expense management for homeowners, landlords, and renters with innovative and user-friendly tools."
-    },
-    "story": {
-      "title": "Our Story",
-      "content": "Founded in 2023, Bricks & Mortar was created by a team of property owners and technology experts who experienced firsthand the challenges of tracking property expenses and managing shared costs."
-    },
-    "values": {
-      "title": "Our Values",
-      "transparency": {
-        "title": "Transparency",
-        "content": "We believe in clear, honest communication with our users and within our team."
-      },
-      "innovation": {
-        "title": "Innovation",
-        "content": "We continuously improve our platform with new features and enhancements."
-      },
-      "reliability": {
-        "title": "Reliability",
-        "content": "We build reliable software that our users can depend on for their property management needs."
-      }
-    },
-    "team": {
-      "title": "Our Team",
-      "content": "Our diverse team of professionals is passionate about creating solutions that make property management easier and more efficient."
-    }
-  },
-  "auth": {
-    "login": "Log in",
-    "signup": "Sign up",
-    "createAccount": "Create account",
-    "loginSubtitle": "Sign in to your account",
-    "createAccountSubtitle": "Create a new account",
-    "forgotPassword": "Forgot password?",
-    "forgotPasswordSubtitle": "Reset your password",
-    "resetPassword": "Reset password",
-    "resetPasswordSubtitle": "Create a new password",
-    "noAccount": "Don't have an account?",
-    "alreadyHaveAccount": "Already have an account?",
-    "emailAddress": "Email address",
-    "password": "Password",
-    "newPassword": "New password",
-    "confirmPassword": "Confirm password",
-    "passwordsDoNotMatch": "Passwords do not match",
-    "passwordTooShort": "Password must be at least 8 characters",
-    "loginError": "Invalid email or password",
-    "registrationError": "Error creating account",
-    "resetPasswordError": "Error resetting password",
-    "updatePasswordError": "Error updating password",
-    "loggingIn": "Logging in...",
-    "creating": "Creating...",
-    "sending": "Sending...",
-    "updating": "Updating...",
-    "logout": "Log out",
-    "loggingOut": "Logging out...",
-    "backToLogin": "Back to login",
-    "checkYourEmail": "Check your email",
-    "emailConfirmationSent": "We've sent a confirmation link to your email address. Please check your inbox and click the link to confirm your account.",
-    "resetEmailSent": "We've sent a password reset link to your email address. Please check your inbox and click the link to reset your password.",
-    "forgotPasswordDescription": "Enter your email address and we'll send you a link to reset your password.",
-    "passwordUpdated": "Password updated",
-    "passwordUpdatedDescription": "Your password has been successfully updated. You can now log in with your new password.",
-    "continueToDashboard": "Continue to dashboard",
-    "enterEmail": "Enter your email",
-    "enterPassword": "Enter your password",
-    "updatePassword": "Update password",
-    "confirmingEmail": "Confirming your email",
-    "emailConfirmed": "Email confirmed",
-    "confirmationFailed": "Confirmation failed",
-    "pleaseWait": "Please wait while we verify your email",
-    "loginToYourAccount": "Your email has been confirmed, please log in to your account",
-    "accountActivated": "Your account has been successfully activated!",
-    "invalidConfirmationLink": "Invalid confirmation link",
-    "errorConfirmingEmail": "There was an error confirming your email",
-    "tryAgain": "Try again",
-    "verificationExpired": "The verification link has expired. Please request a new one.",
-    "verificationExpiredDescription": "For security reasons, email verification links expire after a short time. Please try signing up again to receive a new verification link."
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome to Your Dashboard",
-    "description": "This is your main dashboard where you'll be able to manage your properties and track expenses."
-  },
-  "home": {
-    "hero": {
-      "title": "Welcome to Bricks & Mortar",
-      "description": "The ultimate solution for managing your real estate investments. Track expenses, manage tenancies, and optimize your returns.",
-      "learnMore": "Learn more"
-    },
-    "features": {
-      "title": "Features",
-      "expenseTracking": {
-        "title": "Expense Tracking",
-        "description": "Track all expenses related to your properties in one place."
-      },
-      "propertyManagement": {
-        "title": "Property Management",
-        "description": "Easily manage your properties, tenants, and contracts."
-      },
-      "sharedCosts": {
-        "title": "Shared Costs",
-        "description": "Fairly split costs between co-owners and track payments."
-      }
-    }
-  },
-  "getStarted": "Get Started",
-  "NotFound": {
-    "title": "Page Not Found",
-    "description": "The page you are looking for does not exist or has been moved.",
-    "backHome": "Back to Home"
-  },
-  "profile": {
-    "title": "User Profile",
-    "deleteAccount": "Delete Account",
-    "confirmDelete": "Delete Account",
-    "confirmDeleteButton": "Confirm Delete",
-    "deleteAccountConfirmation": "Are you sure you want to delete your account?",
-    "deleteAccountWarning": "If you delete your account, all your data and information will be deleted. This action is irreversible.",
-    "name": "Full Name",
-    "phone": "Phone Number",
-    "avatarAlt": "User avatar",
-    "clickToUpload": "Click to upload a profile picture",
-    "supportedFormats": "Supported formats: JPG, PNG, GIF",
-    "emailCannotBeChanged": "Email cannot be changed",
-    "profileSaved": "Profile saved successfully",
-    "errors": {
-      "invalidFileType": "Invalid file type. Please upload a JPG, PNG, or GIF image.",
-      "uploadFailed": "Failed to upload image. Please try again.",
-      "saveFailed": "Failed to save profile. Please try again.",
-      "deleteFailed": "Delete Failed",  
-      "deleteFailedDescription": "There was an error deleting your account. Please try again."
-    }
-  }
+	"common": {
+		"appName": "Bricks & Mortar",
+		"welcome": "Welcome to Bricks & Mortar",
+		"allRightsReserved": "All rights reserved",
+		"save": "Save",
+		"saving": "Saving...",
+		"cancel": "Cancel",
+		"delete": "Delete"
+	},
+	"metadata": {
+		"title": "Bricks & Mortar",
+		"description": "Property expense tracking application for homeowners, landlords, and renters"
+	},
+	"navigation": {
+		"home": "Home",
+		"properties": "Properties",
+		"expenses": "Expenses",
+		"settings": "Settings",
+		"about": "About",
+		"privacy": "Privacy",
+		"terms": "Terms",
+		"contact": "Contact",
+		"profile": "Profile"
+	},
+	"about": {
+		"title": "About Bricks & Mortar",
+		"description": "Learn more about our mission and story",
+		"mission": {
+			"title": "Our Mission",
+			"content": "Our mission is to simplify property expense management for homeowners, landlords, and renters with innovative and user-friendly tools."
+		},
+		"story": {
+			"title": "Our Story",
+			"content": "Founded in 2023, Bricks & Mortar was created by a team of property owners and technology experts who experienced firsthand the challenges of tracking property expenses and managing shared costs."
+		},
+		"values": {
+			"title": "Our Values",
+			"transparency": {
+				"title": "Transparency",
+				"content": "We believe in clear, honest communication with our users and within our team."
+			},
+			"innovation": {
+				"title": "Innovation",
+				"content": "We continuously improve our platform with new features and enhancements."
+			},
+			"reliability": {
+				"title": "Reliability",
+				"content": "We build reliable software that our users can depend on for their property management needs."
+			}
+		},
+		"team": {
+			"title": "Our Team",
+			"content": "Our diverse team of professionals is passionate about creating solutions that make property management easier and more efficient."
+		}
+	},
+	"auth": {
+		"login": "Log in",
+		"signup": "Sign up",
+		"createAccount": "Create account",
+		"loginSubtitle": "Sign in to your account",
+		"createAccountSubtitle": "Create a new account",
+		"forgotPassword": "Forgot password?",
+		"forgotPasswordSubtitle": "Reset your password",
+		"resetPassword": "Reset password",
+		"resetPasswordSubtitle": "Create a new password",
+		"noAccount": "Don't have an account?",
+		"alreadyHaveAccount": "Already have an account?",
+		"emailAddress": "Email address",
+		"password": "Password",
+		"newPassword": "New password",
+		"confirmPassword": "Confirm password",
+		"passwordsDoNotMatch": "Passwords do not match",
+		"passwordTooShort": "Password must be at least 8 characters",
+		"loginError": "Invalid email or password",
+		"registrationError": "Error creating account",
+		"emailAlreadyRegistered": "This email is already registered. Please log in or use a different email.",
+		"invalidPassword": "The password you entered is invalid. Please try again.",
+		"invalidEmail": "Please enter a valid email address.",
+		"resetPasswordError": "Error resetting password",
+		"updatePasswordError": "Error updating password",
+		"loggingIn": "Logging in...",
+		"creating": "Creating...",
+		"registering": "Registering...",
+		"register": "Register",
+		"sending": "Sending...",
+		"updating": "Updating...",
+		"logout": "Log out",
+		"loggingOut": "Logging out...",
+		"backToLogin": "Back to login",
+		"checkYourEmail": "Check your email",
+		"emailConfirmationSent": "We've sent a confirmation link to your email address. Please check your inbox and click the link to confirm your account.",
+		"resetEmailSent": "We've sent a password reset link to your email address. Please check your inbox and click the link to reset your password.",
+		"forgotPasswordDescription": "Enter your email address and we'll send you a link to reset your password.",
+		"passwordUpdated": "Password updated",
+		"passwordUpdatedDescription": "Your password has been successfully updated. You can now log in with your new password.",
+		"continueToDashboard": "Continue to dashboard",
+		"enterEmail": "Enter your email",
+		"enterPassword": "Enter your password",
+		"updatePassword": "Update password",
+		"confirmingEmail": "Confirming your email",
+		"emailConfirmed": "Email confirmed",
+		"confirmationFailed": "Confirmation failed",
+		"pleaseWait": "Please wait while we verify your email",
+		"loginToYourAccount": "Your email has been confirmed, please log in to your account",
+		"accountActivated": "Your account has been successfully activated!",
+		"invalidConfirmationLink": "Invalid confirmation link",
+		"errorConfirmingEmail": "There was an error confirming your email",
+		"tryAgain": "Try again",
+		"verificationExpired": "The verification link has expired. Please request a new one.",
+		"verificationExpiredDescription": "For security reasons, email verification links expire after a short time. Please try signing up again to receive a new verification link."
+	},
+	"dashboard": {
+		"title": "Dashboard",
+		"welcome": "Welcome to Your Dashboard",
+		"description": "This is your main dashboard where you'll be able to manage your properties and track expenses."
+	},
+	"home": {
+		"hero": {
+			"title": "Welcome to Bricks & Mortar",
+			"description": "The ultimate solution for managing your real estate investments. Track expenses, manage tenancies, and optimize your returns.",
+			"learnMore": "Learn more"
+		},
+		"features": {
+			"title": "Features",
+			"expenseTracking": {
+				"title": "Expense Tracking",
+				"description": "Track all expenses related to your properties in one place."
+			},
+			"propertyManagement": {
+				"title": "Property Management",
+				"description": "Easily manage your properties, tenants, and contracts."
+			},
+			"sharedCosts": {
+				"title": "Shared Costs",
+				"description": "Fairly split costs between co-owners and track payments."
+			}
+		}
+	},
+	"getStarted": "Get Started",
+	"NotFound": {
+		"title": "Page Not Found",
+		"description": "The page you are looking for does not exist or has been moved.",
+		"backHome": "Back to Home"
+	},
+	"profile": {
+		"title": "User Profile",
+		"deleteAccount": "Delete Account",
+		"confirmDelete": "Delete Account",
+		"confirmDeleteButton": "Confirm Delete",
+		"deleteAccountConfirmation": "Are you sure you want to delete your account?",
+		"deleteAccountWarning": "If you delete your account, all your data and information will be deleted. This action is irreversible.",
+		"name": "Full Name",
+		"phone": "Phone Number",
+		"avatarAlt": "User avatar",
+		"clickToUpload": "Click to upload a profile picture",
+		"supportedFormats": "Supported formats: JPG, PNG, GIF",
+		"emailCannotBeChanged": "Email cannot be changed",
+		"profileSaved": "Profile saved successfully",
+		"deleting": "Deleting...",
+		"errors": {
+			"invalidFileType": "Invalid file type. Please upload a JPG, PNG, or GIF image.",
+			"uploadFailed": "Failed to upload image. Please try again.",
+			"saveFailed": "Failed to save profile. Please try again.",
+			"deleteFailed": "Delete Failed",
+			"deleteFailedDescription": "There was an error deleting your account. Please try again."
+		}
+	},
+	"goodbye": {
+		"title": "Thank You for Using Bricks & Mortar",
+		"message": "We're sorry to see you go. Thank you for trying out our platform. If you change your mind, you can always create a new account.",
+		"signUpAgain": "Sign Up Again"
+	}
 }

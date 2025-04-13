@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
-import { User } from '@supabase/supabase-js';
+import { User, AuthResponse as SupabaseAuthResponse } from '@supabase/supabase-js';
 
 export type AuthFormData = {
 	email: string;
@@ -7,7 +7,15 @@ export type AuthFormData = {
 	locale: string;
 };
 
-export async function signUp({ email, password, locale }: AuthFormData) {
+export type AuthResponse = {
+	data: { user: User | null; session: SupabaseAuthResponse['data']['session'] } | null;
+	error: {
+		message: string;
+		code?: string;
+	} | null;
+};
+
+export async function signUp({ email, password, locale }: AuthFormData): Promise<AuthResponse> {
 	// Get the current URL origin
 	const origin = window.location.origin;
 
@@ -28,23 +36,35 @@ export async function signUp({ email, password, locale }: AuthFormData) {
 	});
 
 	if (error) {
-		throw error;
+		return {
+			data: null,
+			error: {
+				message: error.message,
+				code: error.status?.toString() || error.code,
+			},
+		};
 	}
 
-	return data;
+	return { data, error: null };
 }
 
-export async function signIn({ email, password }: AuthFormData) {
+export async function signIn({ email, password }: AuthFormData): Promise<AuthResponse> {
 	const { data, error } = await supabase.auth.signInWithPassword({
 		email,
 		password,
 	});
 
 	if (error) {
-		throw error;
+		return {
+			data: null,
+			error: {
+				message: error.message,
+				code: error.status?.toString() || error.code,
+			},
+		};
 	}
 
-	return data;
+	return { data, error: null };
 }
 
 export async function signOut() {

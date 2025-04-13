@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from '@/components/ui/dialog';
+import { deleteUser } from '@/lib/actions/auth';
 
 type DeleteAccountDialogProps = {
 	userId: string;
@@ -22,6 +23,7 @@ type DeleteAccountDialogProps = {
 
 export default function DeleteAccountDialog({ userId }: DeleteAccountDialogProps) {
 	const t = useTranslations();
+	const locale = useLocale();
 	const router = useRouter();
 	const [isOpen, setIsOpen] = useState(false);
 	const [isConfirmed, setIsConfirmed] = useState(false);
@@ -35,29 +37,19 @@ export default function DeleteAccountDialog({ userId }: DeleteAccountDialogProps
 			setIsDeleting(true);
 			setError(null);
 
-			// First delete user profile
-			const { error: profileError } = await supabase
-				.from('user_profiles')
-				.delete()
-				.eq('user_id', userId);
-
-			if (profileError) {
-				throw profileError;
-			}
-
-			// Then sign out the user - we don't have admin API access in the client
-			// The server will need to handle the actual auth user deletion via a webhook or server function
-
-			// Sign out the user
+			// First sign out the user
 			await supabase.auth.signOut();
 
-			// Close the dialog and redirect to the home page
+			// Then delete the auth user using the server action
+			await deleteUser(userId);
+
+			// Close the dialog and redirect to the goodbye page with locale
 			setIsOpen(false);
-			router.push('/');
+			router.push(`/${locale}/goodbye`);
 		} catch (err) {
 			console.error('Error deleting account:', err);
 			setError(
-				t('profile.errors.deleteFailed') ||
+				t('profile.deleteFailed') ||
 					'An error occurred while deleting your account. Please try again.'
 			);
 		} finally {

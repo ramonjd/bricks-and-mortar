@@ -37,10 +37,28 @@ export default function RegisterFormFields() {
 		setIsLoading(true);
 
 		try {
-			const { session } = await signUp({ email, password, locale });
+			const { data, error: signUpError } = await signUp({ email, password, locale });
+
+			if (signUpError) {
+				// Handle specific error cases
+				if (
+					signUpError.code === '23505' ||
+					signUpError.message.includes('already registered')
+				) {
+					setError(t('emailAlreadyRegistered'));
+				} else if (signUpError.message.includes('password')) {
+					setError(t('invalidPassword'));
+				} else if (signUpError.message.includes('email')) {
+					setError(t('invalidEmail'));
+				} else {
+					// Fallback to generic error message
+					setError(signUpError.message || t('registrationError'));
+				}
+				return;
+			}
 
 			// If we have a session, the user was auto-confirmed
-			if (session) {
+			if (data?.session) {
 				router.push(`/${locale}/dashboard`);
 				router.refresh();
 			} else {
@@ -127,8 +145,12 @@ export default function RegisterFormFields() {
 			</div>
 
 			<div>
-				<Button type="submit" className="w-full" disabled={isLoading}>
-					{isLoading ? t('creating') : t('createAccount')}
+				<Button
+					type="submit"
+					disabled={isLoading}
+					className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+				>
+					{isLoading ? t('registering') : t('register')}
 				</Button>
 			</div>
 		</form>

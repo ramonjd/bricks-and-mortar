@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
@@ -9,8 +9,7 @@ import Image from 'next/image';
 import DeleteAccountDialog from './DeleteAccountDialog';
 
 type UserProfile = {
-	id?: string;
-	user_id: string;
+	id: string;
 	name: string;
 	phone: string;
 	avatar_url: string | null;
@@ -36,6 +35,40 @@ export default function UserProfileForm({ userId, email, initialProfile }: UserP
 	const [saving, setSaving] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
+	const [loading, setLoading] = useState(!initialProfile);
+
+	// Fetch user profile data if not provided as initialProfile
+	useEffect(() => {
+		const fetchUserProfile = async () => {
+			if (initialProfile) return;
+
+			try {
+				setLoading(true);
+				const { data, error } = await supabase
+					.from('user_profiles')
+					.select('*')
+					.eq('id', userId)
+					.single();
+
+				if (error) {
+					console.error('Error fetching profile:', error);
+					return;
+				}
+
+				if (data) {
+					setName(data.name || '');
+					setPhone(data.phone || '');
+					setAvatarUrl(data.avatar_url);
+				}
+			} catch (err) {
+				console.error('Error fetching profile:', err);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchUserProfile();
+	}, [userId, initialProfile]);
 
 	const handleAvatarClick = () => {
 		fileInputRef.current?.click();
@@ -91,28 +124,21 @@ export default function UserProfileForm({ userId, email, initialProfile }: UserP
 
 		try {
 			const profileData = {
-				user_id: userId,
 				name,
 				phone,
 				avatar_url: avatarUrl,
 				updated_at: new Date().toISOString(),
 			};
 
-			let query;
-			if (initialProfile?.id) {
-				// Update existing profile
-				query = supabase
-					.from('user_profiles')
-					.update(profileData)
-					.eq('id', initialProfile.id);
-			} else {
-				// Insert new profile
-				query = supabase
-					.from('user_profiles')
-					.insert([{ ...profileData, created_at: new Date().toISOString() }]);
-			}
-
-			const { error: upsertError } = await query;
+			// Always use upsert to handle both insert and update cases
+			const { error: upsertError } = await supabase.from('user_profiles').upsert(
+				{
+					...profileData,
+					id: userId,
+					created_at: initialProfile?.created_at || new Date().toISOString(),
+				},
+				{ onConflict: 'id' }
+			);
 
 			if (upsertError) {
 				throw upsertError;
@@ -129,6 +155,14 @@ export default function UserProfileForm({ userId, email, initialProfile }: UserP
 			setSaving(false);
 		}
 	};
+
+	if (loading) {
+		return (
+			<div className="max-w-2xl mx-auto flex justify-center items-center h-64">
+				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="max-w-2xl mx-auto">
