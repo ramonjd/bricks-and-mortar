@@ -4,6 +4,63 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { v4 as uuidv4 } from 'uuid';
 
+// Define a simple type for Google Maps
+type GoogleMaps = {
+	maps: {
+		Map: new (element: HTMLElement, options: MapOptions) => MapInstance;
+		Marker: new (options: MarkerOptions) => MarkerInstance;
+		places: {
+			Autocomplete: new (
+				input: HTMLInputElement,
+				options: AutocompleteOptions
+			) => AutocompleteInstance;
+		};
+	};
+};
+
+// Define specific types for Google Maps objects
+interface MapOptions {
+	center: { lat: number; lng: number };
+	zoom: number;
+	mapTypeControl: boolean;
+}
+
+interface MapInstance {
+	setCenter: (center: { lat: number; lng: number }) => void;
+	setZoom: (zoom: number) => void;
+	fitBounds: (bounds: any) => void;
+}
+
+interface MarkerOptions {
+	position: { lat: number; lng: number };
+	map: MapInstance;
+}
+
+interface MarkerInstance {
+	// Marker methods if needed
+}
+
+interface AutocompleteOptions {
+	fields: string[];
+}
+
+interface AutocompleteInstance {
+	bindTo: (bounds: string, map: MapInstance) => void;
+	addListener: (event: string, callback: () => void) => void;
+	getPlace: () => Place;
+}
+
+interface Place {
+	formatted_address?: string;
+	geometry?: {
+		location: {
+			lat: () => number;
+			lng: () => number;
+		};
+		viewport?: any;
+	};
+}
+
 interface Address {
 	id: string;
 	address: string;
@@ -13,7 +70,7 @@ interface Address {
 
 export default function GetStarted() {
 	const t = useTranslations();
-	const [map, setMap] = useState<any>(null);
+	const [map, setMap] = useState<MapInstance | null>(null);
 	const [addresses, setAddresses] = useState<Address[]>([]);
 	const [sessionId, setSessionId] = useState<string>('');
 	const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -35,7 +92,7 @@ export default function GetStarted() {
 		}
 
 		// Load Google Maps API
-		if (!(window as any).google) {
+		if (!(window as unknown as { google?: GoogleMaps }).google) {
 			const script = document.createElement('script');
 			// Replace with actual API key in .env.local
 			const apiKey =
@@ -58,7 +115,7 @@ export default function GetStarted() {
 
 		const mapElement = document.getElementById('map');
 		if (mapElement) {
-			const google = (window as any).google;
+			const google = (window as unknown as { google: GoogleMaps }).google;
 			const newMap = new google.maps.Map(mapElement, {
 				center: { lat: 40.749933, lng: -73.98633 },
 				zoom: 13,
@@ -83,13 +140,21 @@ export default function GetStarted() {
 				if (place.geometry.viewport) {
 					newMap.fitBounds(place.geometry.viewport);
 				} else {
-					newMap.setCenter(place.geometry.location);
+					// Convert function-based lat/lng to object-based
+					const location = {
+						lat: place.geometry.location.lat(),
+						lng: place.geometry.location.lng(),
+					};
+					newMap.setCenter(location);
 					newMap.setZoom(17);
 				}
 
 				// Create a marker for the selected place
 				new google.maps.Marker({
-					position: place.geometry.location,
+					position: {
+						lat: place.geometry.location.lat(),
+						lng: place.geometry.location.lng(),
+					},
 					map: newMap,
 				});
 
@@ -130,7 +195,7 @@ export default function GetStarted() {
 			map.setZoom(17);
 
 			// Create a marker for the selected place
-			const google = (window as any).google;
+			const google = (window as unknown as { google: GoogleMaps }).google;
 			new google.maps.Marker({
 				position: { lat: address.lat, lng: address.lng },
 				map: map,
