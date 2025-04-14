@@ -170,7 +170,7 @@ export default function GetStarted() {
 
 	// Save addresses to session storage whenever they change
 	useEffect(() => {
-		if (sessionId && addresses.length >= 0) {
+		if (sessionId && addresses.length > 0) {
 			sessionStorage.setItem(`property_addresses_${sessionId}`, JSON.stringify(addresses));
 		}
 	}, [addresses, sessionId]);
