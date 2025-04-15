@@ -219,9 +219,7 @@ export default function UserProfileForm({ userId, email, initialProfile }: UserP
 
 				<div className="space-y-4">
 					<div>
-						<Label htmlFor="email">
-							{t('auth.emailAddress')}
-						</Label>
+						<Label htmlFor="email">{t('auth.emailAddress')}</Label>
 						<Input
 							type="email"
 							id="email"
@@ -235,9 +233,7 @@ export default function UserProfileForm({ userId, email, initialProfile }: UserP
 					</div>
 
 					<div className="space-y-2">
-						<Label htmlFor="name">
-							{t('profile.name')}
-						</Label>
+						<Label htmlFor="name">{t('profile.name')}</Label>
 						<Input
 							type="text"
 							id="name"
@@ -248,9 +244,7 @@ export default function UserProfileForm({ userId, email, initialProfile }: UserP
 					</div>
 
 					<div className="space-y-2">
-						<Label htmlFor="phone">
-							{t('profile.phone')}
-						</Label>
+						<Label htmlFor="phone">{t('profile.phone')}</Label>
 						<Input
 							type="tel"
 							id="phone"

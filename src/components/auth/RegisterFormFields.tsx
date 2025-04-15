@@ -86,7 +86,9 @@ export default function RegisterFormFields() {
 					<p className="text-muted-foreground">{t('emailConfirmationSent')}</p>
 				</CardContent>
 				<CardFooter>
-					<Button onClick={() => router.push(`/${locale}/login`)}>{t('backToLogin')}</Button>
+					<Button onClick={() => router.push(`/${locale}/login`)}>
+						{t('backToLogin')}
+					</Button>
 				</CardFooter>
 			</Card>
 		);
@@ -97,9 +99,7 @@ export default function RegisterFormFields() {
 			{error && <div className="p-3 bg-red-50 text-red-800 rounded-md text-sm">{error}</div>}
 
 			<div className="space-y-2">
-				<Label htmlFor="email">
-					{t('emailAddress')}
-				</Label>
+				<Label htmlFor="email">{t('emailAddress')}</Label>
 				<Input
 					id="email"
 					name="email"
@@ -112,9 +112,7 @@ export default function RegisterFormFields() {
 			</div>
 
 			<div className="space-y-2">
-				<Label htmlFor="password">
-					{t('password')}
-				</Label>
+				<Label htmlFor="password">{t('password')}</Label>
 				<Input
 					id="password"
 					name="password"
@@ -127,9 +125,7 @@ export default function RegisterFormFields() {
 			</div>
 
 			<div className="space-y-2">
-				<Label htmlFor="confirmPassword">
-					{t('confirmPassword')}
-				</Label>
+				<Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
 				<Input
 					id="confirmPassword"
 					name="confirmPassword"
@@ -141,11 +137,7 @@ export default function RegisterFormFields() {
 				/>
 			</div>
 
-			<Button
-				type="submit"
-				disabled={isLoading}
-				className="w-full"
-			>
+			<Button type="submit" disabled={isLoading} className="w-full">
 				{isLoading ? t('registering') : t('register')}
 			</Button>
 		</form>

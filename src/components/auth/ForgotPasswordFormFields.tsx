@@ -60,9 +60,7 @@ export default function ForgotPasswordFormFields() {
 			<div className="space-y-4">
 				<p className="text-sm text-muted-foreground">{t('forgotPasswordDescription')}</p>
 				<div className="space-y-2">
-					<Label htmlFor="email">
-						{t('emailAddress')}
-					</Label>
+					<Label htmlFor="email">{t('emailAddress')}</Label>
 					<Input
 						id="email"
 						name="email"
