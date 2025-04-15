@@ -56,7 +56,7 @@ export function Header({ locale }: HeaderProps) {
 				<div className="font-bold text-xl">
 					<Link href={`/${locale}`}>{t('common.appName')}</Link>
 				</div>
-				<div className="space-x-4">
+				<div className="flex items-end gap-4">
 					{!isLoading && !isAuthPage && (
 						<>
 							{isAuthenticated ? (
@@ -93,9 +93,7 @@ export function Header({ locale }: HeaderProps) {
 							)}
 						</>
 					)}
-					<div className="absolute top-4 right-4 z-50">
-						<LanguageSwitcher />
-					</div>
+					<LanguageSwitcher />
 				</div>
 			</div>
 		</header>

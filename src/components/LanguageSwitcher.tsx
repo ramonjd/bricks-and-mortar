@@ -2,28 +2,38 @@
 
 import { useLocale, usePathname, useRouter } from '@/lib/i18n/client';
 import { locales } from '@/lib/i18n/config';
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
 
 export default function LanguageSwitcher() {
 	const pathname = usePathname();
 	const router = useRouter();
 	const currentLocale = useLocale();
 
-	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		const newLocale = e.target.value;
+	const handleValueChange = (newLocale: string) => {
 		router.replace(pathname, { locale: newLocale });
 	};
 
 	return (
-		<select
-			value={currentLocale}
-			onChange={handleChange}
-			className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-		>
-			{locales.map((locale) => (
-				<option key={locale} value={locale}>
-					{locale === 'en' ? '🇬🇧 EN' : '🇩🇪 DE'}
-				</option>
-			))}
-		</select>
+		<Select value={currentLocale} onValueChange={handleValueChange}>
+			<SelectTrigger className="w-[100px]">
+				<SelectValue placeholder="Language" />
+			</SelectTrigger>
+			<SelectContent>
+				<SelectGroup>
+					{locales.map((locale) => (
+						<SelectItem key={locale} value={locale}>
+							{locale === 'en' ? '🇬🇧 EN' : '🇩🇪 DE'}
+						</SelectItem>
+					))}
+				</SelectGroup>
+			</SelectContent>
+		</Select>
 	);
 }
