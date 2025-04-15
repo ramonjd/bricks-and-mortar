@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import Image from 'next/image';
 import DeleteAccountDialog from './DeleteAccountDialog';
 
@@ -217,45 +219,43 @@ export default function UserProfileForm({ userId, email, initialProfile }: UserP
 
 				<div className="space-y-4">
 					<div>
-						<label htmlFor="email" className="block text-sm font-medium text-gray-700">
+						<Label htmlFor="email">
 							{t('auth.emailAddress')}
-						</label>
-						<input
+						</Label>
+						<Input
 							type="email"
 							id="email"
 							value={email}
 							disabled
-							className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm text-gray-600 sm:text-sm"
+							className="bg-muted text-muted-foreground"
 						/>
-						<p className="mt-1 text-xs text-gray-500">
+						<p className="mt-1 text-xs text-muted-foreground">
 							{t('profile.emailCannotBeChanged')}
 						</p>
 					</div>
 
-					<div>
-						<label htmlFor="name" className="block text-sm font-medium text-gray-700">
+					<div className="space-y-2">
+						<Label htmlFor="name">
 							{t('profile.name')}
-						</label>
-						<input
+						</Label>
+						<Input
 							type="text"
 							id="name"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 							required
 						/>
 					</div>
 
-					<div>
-						<label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+					<div className="space-y-2">
+						<Label htmlFor="phone">
 							{t('profile.phone')}
-						</label>
-						<input
+						</Label>
+						<Input
 							type="tel"
 							id="phone"
 							value={phone}
 							onChange={(e) => setPhone(e.target.value)}
-							className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 						/>
 					</div>
 				</div>

@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useLocale } from 'next-intl';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/lib/supabase/client';
 import Link from 'next/link';
 
@@ -51,31 +54,29 @@ export default function LoginFormFields() {
 			{error && <div className="p-3 bg-red-50 text-red-800 rounded-md text-sm">{error}</div>}
 
 			<div className="space-y-2">
-				<label htmlFor="email" className="block text-sm font-medium text-gray-700">
+				<Label htmlFor="email">
 					{t('emailAddress')}
-				</label>
-				<input
+				</Label>
+				<Input
 					id="email"
 					name="email"
 					type="email"
 					placeholder={t('enterEmail')}
 					required
 					disabled={isLoading}
-					className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 				/>
 			</div>
 			<div className="space-y-2">
-				<label htmlFor="password" className="block text-sm font-medium text-gray-700">
+				<Label htmlFor="password">
 					{t('password')}
-				</label>
-				<input
+				</Label>
+				<Input
 					id="password"
 					name="password"
 					type="password"
 					placeholder={t('enterPassword')}
 					required
 					disabled={isLoading}
-					className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 				/>
 			</div>
 			<Button type="submit" className="w-full" disabled={isLoading}>

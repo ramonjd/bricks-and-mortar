@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { resetPassword } from '@/lib/services/auth';
 
 export default function ForgotPasswordFormFields() {
@@ -34,13 +37,19 @@ export default function ForgotPasswordFormFields() {
 
 	if (isSuccess) {
 		return (
-			<div className="text-center">
-				<h3 className="mb-4 text-lg font-medium text-gray-900">{t('checkYourEmail')}</h3>
-				<p className="text-gray-600 mb-6">{t('resetEmailSent')}</p>
-				<Button onClick={() => router.push(`/${locale}/(auth)/login`)}>
-					{t('backToLogin')}
-				</Button>
-			</div>
+			<Card>
+				<CardHeader>
+					<CardTitle>{t('checkYourEmail')}</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<p className="text-muted-foreground">{t('resetEmailSent')}</p>
+				</CardContent>
+				<CardFooter>
+					<Button onClick={() => router.push(`/${locale}/(auth)/login`)}>
+						{t('backToLogin')}
+					</Button>
+				</CardFooter>
+			</Card>
 		);
 	}
 
@@ -48,13 +57,13 @@ export default function ForgotPasswordFormFields() {
 		<form className="space-y-6" onSubmit={handleSubmit}>
 			{error && <div className="p-3 bg-red-50 text-red-800 rounded-md text-sm">{error}</div>}
 
-			<div>
-				<p className="text-sm text-gray-600 mb-4">{t('forgotPasswordDescription')}</p>
-				<label htmlFor="email" className="block text-sm font-medium text-gray-700">
-					{t('emailAddress')}
-				</label>
-				<div className="mt-1">
-					<input
+			<div className="space-y-4">
+				<p className="text-sm text-muted-foreground">{t('forgotPasswordDescription')}</p>
+				<div className="space-y-2">
+					<Label htmlFor="email">
+						{t('emailAddress')}
+					</Label>
+					<Input
 						id="email"
 						name="email"
 						type="email"
@@ -62,16 +71,13 @@ export default function ForgotPasswordFormFields() {
 						required
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
-						className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
 					/>
 				</div>
 			</div>
 
-			<div>
-				<Button type="submit" className="w-full" disabled={isLoading}>
-					{isLoading ? t('sending') : t('resetPassword')}
-				</Button>
-			</div>
+			<Button type="submit" className="w-full" disabled={isLoading}>
+				{isLoading ? t('sending') : t('resetPassword')}
+			</Button>
 		</form>
 	);
 }
