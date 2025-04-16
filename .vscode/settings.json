@@ -20,5 +20,10 @@
     "fs",
     "http",
     "net"
-  ]
+  ],
+  "files.watcherExclude": {
+    "**/jetpack_vendor/**": true,
+    "**/vendor/**": true,
+    "project/plugins/jetpack/_inc/blocks": true
+  }
 }
