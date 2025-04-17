@@ -14,11 +14,11 @@ export default async function NewPropertyPage({
 
 	const supabase = createClient();
 	const {
-		data: { session },
-	} = await supabase.auth.getSession();
+		data: { user },
+	} = await supabase.auth.getUser();
 
 	// Check if user is authenticated
-	if (!session) {
+	if (!user) {
 		redirect(`/${locale}/login`);
 	}
 
@@ -30,9 +30,8 @@ export default async function NewPropertyPage({
 				<h1 className="text-2xl font-bold">{t('new.title')}</h1>
 				<p className="text-muted-foreground">{t('new.description')}</p>
 			</div>
-			
 			<div className="bg-white shadow rounded-lg p-6">
-				<NewPropertyForm userId={session.user.id} locale={locale} />
+				<NewPropertyForm userId={user.id} locale={locale} />
 			</div>
 		</div>
 	);

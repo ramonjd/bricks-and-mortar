@@ -13,11 +13,11 @@ export default async function DashboardPage({
 
 	const supabase = createClient();
 	const {
-		data: { session },
-	} = await supabase.auth.getSession();
+		data: { user },
+	} = await supabase.auth.getUser();
 
 	// Check if user is authenticated
-	if (!session) {
+	if (!user) {
 		redirect(`/${locale}/login`);
 	}
 
