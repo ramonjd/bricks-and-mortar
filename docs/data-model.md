@@ -22,7 +22,7 @@ This document outlines the proposed data model for the Bricks & Mortar applicati
 - `purchase_date`: Date of purchase (nullable for renters)
 - `purchase_price`: Original purchase price (nullable for renters)
 - `current_value`: Latest estimated value
-- `square_footage`: Size of property
+- `square_meters`: Size of property
 - `bedrooms`: Number of bedrooms
 - `bathrooms`: Number of bathrooms
 - `year_built`: Construction year
