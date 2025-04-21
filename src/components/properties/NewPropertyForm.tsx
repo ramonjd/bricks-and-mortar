@@ -150,6 +150,29 @@ export default function NewPropertyForm({
 	};
 
 	// Initialize form with proper types
+
+	console.log('NewPropertyForm received prefilledData:', prefilledData);
+
+	const formSchema = z.object({
+		name: z.string().min(1, t('new.validation.nameRequired')),
+		address: z.string().min(1, t('new.validation.addressRequired')),
+		latitude: z.number().optional(),
+		longitude: z.number().optional(),
+		property_type: z.string().min(1, t('new.validation.typeRequired')),
+		bedrooms: z.number().min(0),
+		bathrooms: z.number().min(0),
+		square_meters: z.number().min(0),
+		year_built: z.number().min(1800).max(new Date().getFullYear()),
+		purchase_date: z.date().optional(),
+		purchase_price: z.number().min(0),
+		current_value: z.number().min(0),
+		description: z.string().optional(),
+		status: z.string().default('active'),
+		image_urls: z.array(z.string()).default([]),
+	});
+
+	type FormData = z.infer<typeof formSchema>;
+	console.log('prefilledData', prefilledData);
 	const form = useForm<FormData>({
 		resolver: zodResolver(formSchema) as any,
 		defaultValues: {
@@ -319,6 +342,28 @@ export default function NewPropertyForm({
 		};
 	}, [map, isMapLoaded, form.watch('latitude'), form.watch('longitude')]);
 
+	// Set form values from prefilledData after form initialization
+	useEffect(() => {
+		if (prefilledData && Object.keys(prefilledData).length > 0) {
+			console.log('Setting form values from prefilledData:', prefilledData);
+
+			// Set each field individually to avoid type issues
+			if (prefilledData.address) {
+				form.setValue('address', prefilledData.address as string);
+			}
+			if (prefilledData.lat) {
+				form.setValue('latitude', prefilledData.lat as number);
+			}
+			if (prefilledData.lng) {
+				form.setValue('longitude', prefilledData.lng as number);
+			}
+
+			// Log the updated form values
+			console.log('Updated form values:', form.getValues());
+		}
+	}, [prefilledData, form]);
+
+	console.log('Form defaultValues:', form.getValues());
 	// Property types
 	const propertyTypes = [
 		{ value: 'house', label: t('types.house') },

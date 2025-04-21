@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { X } from 'lucide-react';
 
 interface StoredProperty {
+	id: string;
 	name: string;
 	address: string;
 	property_type?: string;
@@ -38,10 +39,20 @@ export default function StoredPropertiesAlert({
 
 	useEffect(() => {
 		try {
-			const storedPropertiesData = sessionStorage.getItem('storedProperties');
-			if (storedPropertiesData) {
-				const parsedData = JSON.parse(storedPropertiesData);
-				setStoredProperties(Array.isArray(parsedData) ? parsedData : [parsedData]);
+			const storedSessionId = sessionStorage.getItem('property_session_id');
+			console.log('StoredPropertiesAlert - Session ID:', storedSessionId);
+
+			if (storedSessionId) {
+				const storedPropertiesData = sessionStorage.getItem(
+					`property_addresses_${storedSessionId}`
+				);
+				console.log('StoredPropertiesAlert - Raw Data:', storedPropertiesData);
+
+				if (storedPropertiesData) {
+					const parsedData = JSON.parse(storedPropertiesData);
+					console.log('StoredPropertiesAlert - Parsed Data:', parsedData);
+					setStoredProperties(Array.isArray(parsedData) ? parsedData : [parsedData]);
+				}
 			}
 		} catch (error) {
 			console.error('Error retrieving properties from sessionStorage:', error);
@@ -49,13 +60,15 @@ export default function StoredPropertiesAlert({
 	}, []);
 
 	const handlePropertyClick = (property: StoredProperty) => {
+		console.log('Property clicked:', property);
 		onSelectProperty(property);
-		router.push(`/${locale}/dashboard/properties/new`);
+		router.push(`/${locale}/dashboard/properties/new?property=${property.id}`);
 	};
 
 	const clearStoredProperties = () => {
 		try {
-			sessionStorage.removeItem('storedProperties');
+			const storedSessionId = sessionStorage.getItem('property_session_id');
+			sessionStorage.removeItem(`property_addresses_${storedSessionId}`);
 			setStoredProperties([]);
 		} catch (error) {
 			console.error('Error clearing properties from sessionStorage:', error);
