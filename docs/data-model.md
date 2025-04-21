@@ -18,6 +18,8 @@ This document outlines the proposed data model for the Bricks & Mortar applicati
 - `id`: Unique identifier
 - `name`: Property name/title
 - `address`: Physical address
+- `latitude`: Geo coords lat
+- `longitude`: Geo coords long
 - `property_type`: Type (e.g., single-family, apartment, condo)
 - `purchase_date`: Date of purchase (nullable for renters)
 - `purchase_price`: Original purchase price (nullable for renters)
@@ -31,6 +33,7 @@ This document outlines the proposed data model for the Bricks & Mortar applicati
 - `image_urls`: Array of property images
 - `created_at`: Record creation timestamp
 - `updated_at`: Last update timestamp
+- `created_by`: UUID (references auth.users) - The user who created the property record
 
 ### Expense
 - `id`: Unique identifier
@@ -130,3 +133,50 @@ User
    - Active leases would be current date between start_date and end_date
 
 This data model supports the complex relationships between users, properties, and expenses while allowing for the different user profiles (renters, landlords, joint owners) described in the requirements.
+
+## User Profiles
+- `id`: UUID (references auth.users)
+- `name`: User's full name
+- `phone`: Contact phone number
+- `avatar_url`: URL to user's avatar image
+- `created_at`: Record creation timestamp
+- `updated_at`: Last update timestamp
+
+## Properties
+- `id`: UUID (primary key)
+- `name`: Property name/title
+- `address`: Physical address (required)
+- `latitude`: Geo coords lat
+- `longitude`: Geo coords long
+- `property_type`: Type (e.g., single-family, apartment, condo)
+- `purchase_date`: Date of purchase (nullable for renters)
+- `purchase_price`: Original purchase price (nullable for renters)
+- `current_value`: Latest estimated value
+- `square_meters`: Size of property
+- `bedrooms`: Number of bedrooms
+- `bathrooms`: Number of bathrooms
+- `year_built`: Construction year
+- `description`: Property description
+- `status`: Active/inactive (defaults to 'active')
+- `image_urls`: Array of property images
+- `created_at`: Record creation timestamp
+- `updated_at`: Last update timestamp
+- `created_by`: UUID (references auth.users) - The user who created the property record
+
+## Property Users (Junction Table)
+- `property_id`: UUID (references properties)
+- `user_id`: UUID (references auth.users)
+- `role`: Text ('owner' or 'shared') - Defaults to 'shared'
+- `created_at`: Record creation timestamp
+
+## Relationships
+- A user can have one profile (1:1)
+- A user can create multiple properties (1:N)
+- A property can be associated with multiple users (N:M) through the property_users table
+- The property creator is automatically added as an 'owner' in the property_users table
+
+## Access Control
+- Users can only view properties they own or are shared with
+- Only the creator of a property can update or delete it
+- Property owners can add, update, or remove shared users
+- Property images are only accessible to property owners and shared users

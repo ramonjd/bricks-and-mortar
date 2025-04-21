@@ -51,6 +51,99 @@ CREATE POLICY "Users can update their own avatar images"
   FOR UPDATE 
   USING (bucket_id = 'avatars' AND (storage.foldername(name))[1] = 'avatars');
 
+-- Create properties table
+CREATE TABLE public.properties (
+  id UUID NOT NULL DEFAULT gen_random_uuid(),
+  name TEXT,
+  address TEXT NOT NULL,
+  latitude DECIMAL(10, 8),
+  longitude DECIMAL(11, 8),
+  property_type TEXT,
+  purchase_date DATE,
+  purchase_price DECIMAL(12, 2),
+  current_value DECIMAL(12, 2),
+  square_meters INTEGER,
+  bedrooms INTEGER,
+  bathrooms DECIMAL(3, 1),
+  year_built INTEGER,
+  description TEXT,
+  status TEXT DEFAULT 'active',
+  image_urls TEXT[],
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  PRIMARY KEY (id)
+);
+
+ALTER TABLE public.properties ENABLE ROW LEVEL SECURITY;
+
+-- Create property_users junction table for shared properties
+CREATE TABLE public.property_users (
+  property_id UUID NOT NULL REFERENCES public.properties(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  role TEXT NOT NULL DEFAULT 'shared', -- 'owner' or 'shared'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  PRIMARY KEY (property_id, user_id)
+);
+
+ALTER TABLE public.property_users ENABLE ROW LEVEL SECURITY;
+
+-- Create storage for property images
+INSERT INTO storage.buckets (id, name, public) VALUES ('properties', 'properties', true);
+
+
+-- Create a single, simple policy for properties
+CREATE POLICY "properties_policy" 
+  ON public.properties 
+  FOR ALL 
+  USING (
+    created_by = auth.uid()
+  );
+
+-- Create a single, simple policy for property_users
+CREATE POLICY "property_users_policy" 
+  ON public.property_users 
+  FOR ALL 
+  USING (
+    user_id = auth.uid() OR
+    property_id IN (
+      SELECT id FROM public.properties WHERE created_by = auth.uid()
+    )
+  );
+
+-- Create policies for property images
+CREATE POLICY "Property images are accessible to property owners and shared users" 
+  ON storage.objects 
+  FOR SELECT 
+  USING (
+    bucket_id = 'properties' AND 
+    (
+      EXISTS (
+        SELECT 1 FROM public.properties 
+        WHERE created_by = auth.uid() AND 
+        image_urls @> ARRAY[storage.objects.name]
+      ) OR 
+      EXISTS (
+        SELECT 1 FROM public.properties p
+        JOIN public.property_users pu ON p.id = pu.property_id
+        WHERE pu.user_id = auth.uid() AND 
+        p.image_urls @> ARRAY[storage.objects.name]
+      )
+    )
+  );
+
+CREATE POLICY "Property owners can upload property images" 
+  ON storage.objects 
+  FOR INSERT 
+  WITH CHECK (
+    bucket_id = 'properties' AND 
+    EXISTS (
+      SELECT 1 FROM public.properties 
+      WHERE created_by = auth.uid() AND 
+      image_urls @> ARRAY[storage.objects.name]
+    )
+  );
+
 -- Drop existing triggers if they exist
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP TRIGGER IF EXISTS on_auth_user_updated ON auth.users;
@@ -125,6 +218,25 @@ CREATE TRIGGER on_auth_user_deleted
   BEFORE DELETE ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_user_deletion();
 
+-- Create function to automatically add creator to property_users
+CREATE OR REPLACE FUNCTION public.handle_property_creation()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Add the creator as an owner in the property_users table
+  INSERT INTO public.property_users (property_id, user_id, role)
+  VALUES (NEW.id, NEW.created_by, 'owner');
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create trigger for property creation
+CREATE TRIGGER on_property_created
+  AFTER INSERT ON public.properties
+  FOR EACH ROW EXECUTE FUNCTION public.handle_property_creation();
+
 -- Grant necessary permissions
 GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
 GRANT ALL ON public.user_profiles TO postgres, anon, authenticated, service_role;
+GRANT ALL ON public.properties TO postgres, anon, authenticated, service_role;
+GRANT ALL ON public.property_users TO postgres, anon, authenticated, service_role;
