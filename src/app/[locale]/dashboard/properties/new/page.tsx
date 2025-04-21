@@ -2,7 +2,7 @@ import { unstable_setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import NewPropertyForm from '@/components/properties/NewPropertyForm';
+import PrefilledPropertyWrapper from '@/components/properties/PrefilledPropertyWrapper';
 
 export default async function NewPropertyPage({
 	params: { locale },
@@ -31,7 +31,7 @@ export default async function NewPropertyPage({
 				<p className="text-muted-foreground">{t('new.description')}</p>
 			</div>
 			<div className="bg-white shadow rounded-lg p-6">
-				<NewPropertyForm userId={user.id} locale={locale} />
+				<PrefilledPropertyWrapper userId={user.id} locale={locale} />
 			</div>
 		</div>
 	);
