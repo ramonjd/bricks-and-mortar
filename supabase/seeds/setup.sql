@@ -240,3 +240,5 @@ GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
 GRANT ALL ON public.user_profiles TO postgres, anon, authenticated, service_role;
 GRANT ALL ON public.properties TO postgres, anon, authenticated, service_role;
 GRANT ALL ON public.property_users TO postgres, anon, authenticated, service_role;
+
+
