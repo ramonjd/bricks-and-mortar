@@ -101,7 +101,7 @@ export default function NewPropertyForm({
 			toast.success(t('new.success.created'));
 			router.push(`/${locale}/dashboard/properties`);
 			router.refresh();
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error('Error creating property:', err);
 			setError(t('new.errors.createFailed'));
 			toast.error(t('new.errors.createFailed'));
