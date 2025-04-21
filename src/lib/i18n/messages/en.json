@@ -181,6 +181,14 @@
 				"financialInfo": "Financial Information",
 				"additionalInfo": "Additional Information"
 			},
+			"steps": {
+				"step1": "Name Your Property",
+				"step2": "Enter Address",
+				"step3": "Property Details",
+				"step4": "Rooms & Size",
+				"step5": "Value Information",
+				"step6": "Upload Photos"
+			},
 			"fields": {
 				"propertyType": "Property Type",
 				"rentalStatus": "Rental Status",
@@ -224,7 +232,9 @@
 				"bathroomsRequired": "Please enter the number of bathrooms"
 			},
 			"errors": {
-				"createFailed": "There was an error creating your property. Please try again."
+				"createFailed": "There was an error creating your property. Please try again.",
+				"updateFailed": "There was an error updating your property. Please try again.",
+				"finalizeFailed": "There was an error finalizing your property. Please try again."
 			},
 			"success": {
 				"created": "Property created successfully"
@@ -232,7 +242,18 @@
 			"actions": {
 				"cancel": "Cancel",
 				"create": "Create Property",
-				"creating": "Creating..."
+				"creating": "Creating...",
+				"next": "Next",
+				"previous": "Previous",
+				"finish": "Finish",
+				"saving": "Saving...",
+				"finalizing": "Finalizing..."
+			},
+			"googleMaps": {
+				"placeholder": "Google Maps integration will be available here"
+			},
+			"images": {
+				"dropzone": "Drop files here or click to upload"
 			}
 		},
 		"types": {
@@ -254,6 +275,25 @@
 		"status": {
 			"active": "Active",
 			"inactive": "Inactive"
+		},
+		"backToList": "Back to Properties",
+		"detail": {
+			"noImages": "No images available",
+			"location": "Location",
+			"description": "Description",
+			"propertyDetails": "Property Details",
+			"propertyType": "Property Type",
+			"yearBuilt": "Year Built",
+			"bedrooms": "Bedrooms",
+			"bathrooms": "Bathrooms",
+			"squareMeters": "Size",
+			"financialDetails": "Financial Details",
+			"purchasePrice": "Purchase Price",
+			"currentValue": "Current Value",
+			"actions": {
+				"edit": "Edit Property",
+				"expenses": "Manage Expenses"
+			}
 		}
 	}
 }

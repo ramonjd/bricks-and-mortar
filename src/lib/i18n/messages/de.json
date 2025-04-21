@@ -181,6 +181,14 @@
 				"financialInfo": "Finanzinformationen",
 				"additionalInfo": "Zusätzliche Informationen"
 			},
+			"steps": {
+				"step1": "Immobilie benennen",
+				"step2": "Adresse eingeben",
+				"step3": "Immobiliendetails",
+				"step4": "Räume & Größe",
+				"step5": "Wertinformationen",
+				"step6": "Fotos hochladen"
+			},
 			"fields": {
 				"propertyType": "Immobilientyp",
 				"rentalStatus": "Vermietungsstatus",
@@ -224,7 +232,9 @@
 				"bathroomsRequired": "Bitte geben Sie die Anzahl der Badezimmer ein"
 			},
 			"errors": {
-				"createFailed": "Beim Erstellen Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+				"createFailed": "Beim Erstellen Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+				"updateFailed": "Bei der Aktualisierung Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+				"finalizeFailed": "Bei der Fertigstellung Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
 			},
 			"success": {
 				"created": "Immobilie erfolgreich erstellt"
@@ -232,7 +242,18 @@
 			"actions": {
 				"cancel": "Abbrechen",
 				"create": "Immobilie erstellen",
-				"creating": "Erstelle..."
+				"creating": "Erstelle...",
+				"next": "Weiter",
+				"previous": "Zurück",
+				"finish": "Fertigstellen",
+				"saving": "Speichern...",
+				"finalizing": "Fertigstellen..."
+			},
+			"googleMaps": {
+				"placeholder": "Google Maps-Integration wird hier verfügbar sein"
+			},
+			"images": {
+				"dropzone": "Dateien hier ablegen oder zum Hochladen klicken"
 			}
 		},
 		"types": {
@@ -254,6 +275,25 @@
 		"status": {
 			"active": "Aktiv",
 			"inactive": "Inaktiv"
+		},
+		"backToList": "Zurück zu Immobilien",
+		"detail": {
+			"noImages": "Keine Bilder verfügbar",
+			"location": "Standort",
+			"description": "Beschreibung",
+			"propertyDetails": "Immobiliendetails",
+			"propertyType": "Immobilientyp",
+			"yearBuilt": "Baujahr",
+			"bedrooms": "Schlafzimmer",
+			"bathrooms": "Badezimmer",
+			"squareMeters": "Größe",
+			"financialDetails": "Finanzielle Details",
+			"purchasePrice": "Kaufpreis",
+			"currentValue": "Aktueller Wert",
+			"actions": {
+				"edit": "Immobilie bearbeiten",
+				"expenses": "Ausgaben verwalten"
+			}
 		}
 	}
 }
