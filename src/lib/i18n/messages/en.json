@@ -183,9 +183,11 @@
 			},
 			"fields": {
 				"propertyType": "Property Type",
-				"isRental": "This is a rental property",
+				"rentalStatus": "Rental Status",
 				"name": "Property Name",
 				"address": "Address",
+				"latitude": "Latitude",
+				"longitude": "Longitude",
 				"squareMeters": "Size (square meters)",
 				"yearBuilt": "Year Built",
 				"bedrooms": "Number of Bedrooms",
@@ -193,32 +195,39 @@
 				"purchaseDate": "Purchase Date",
 				"purchasePrice": "Purchase Price",
 				"currentValue": "Current Value",
-				"description": "Description"
+				"monthlyRent": "Monthly Rent",
+				"description": "Description",
+				"rentalStatuses": {
+					"ownerOccupied": "Owner Occupied",
+					"rented": "Rented",
+					"vacant": "Vacant"
+				}
 			},
 			"placeholders": {
 				"selectType": "Select a property type",
+				"selectStatus": "Select rental status",
 				"name": "e.g., My Downtown Condo",
 				"address": "Full address including city and postal code",
+				"latitude": "e.g., 52.520008",
+				"longitude": "e.g., 13.404954",
 				"yearBuilt": "e.g., 2005",
 				"price": "0.00",
 				"description": "Add any additional details about your property..."
 			},
-			"help": {
-				"isRental": "Check this if you're renting this property rather than owning it",
-				"name": "A unique name to identify this property",
-				"currentValue": "Your estimate of the property's current market value",
-				"description": "Include any important details about the property that aren't covered by the other fields"
-			},
 			"validation": {
-				"nameRequired": "Please enter a property name (at least 2 characters)",
-				"addressRequired": "Please enter a complete address (at least 5 characters)",
+				"nameRequired": "Please enter a property name",
+				"addressRequired": "Please enter a complete address",
 				"typeRequired": "Please select a property type",
+				"rentalStatusRequired": "Please select a rental status",
 				"squareMetersRequired": "Please enter the property size",
 				"bedroomsRequired": "Please enter the number of bedrooms",
 				"bathroomsRequired": "Please enter the number of bathrooms"
 			},
 			"errors": {
 				"createFailed": "There was an error creating your property. Please try again."
+			},
+			"success": {
+				"created": "Property created successfully"
 			},
 			"actions": {
 				"cancel": "Cancel",
@@ -234,6 +243,17 @@
 			"duplex": "Duplex",
 			"commercial": "Commercial Property",
 			"other": "Other"
+		},
+		"table": {
+			"name": "Name",
+			"address": "Address",
+			"status": "Status",
+			"lastUpdated": "Last Updated",
+			"untitled": "Untitled"
+		},
+		"status": {
+			"active": "Active",
+			"inactive": "Inactive"
 		}
 	}
 }

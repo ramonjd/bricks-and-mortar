@@ -183,9 +183,11 @@
 			},
 			"fields": {
 				"propertyType": "Immobilientyp",
-				"isRental": "Dies ist eine Mietimmobilie",
+				"rentalStatus": "Vermietungsstatus",
 				"name": "Immobilienname",
 				"address": "Adresse",
+				"latitude": "Breitengrad",
+				"longitude": "Längengrad",
 				"squareMeters": "Größe (Quadratmeter)",
 				"yearBuilt": "Baujahr",
 				"bedrooms": "Anzahl der Schlafzimmer",
@@ -193,32 +195,39 @@
 				"purchaseDate": "Kaufdatum",
 				"purchasePrice": "Kaufpreis",
 				"currentValue": "Aktueller Wert",
-				"description": "Beschreibung"
+				"monthlyRent": "Monatliche Miete",
+				"description": "Beschreibung",
+				"rentalStatuses": {
+					"ownerOccupied": "Eigennutzung",
+					"rented": "Vermietet",
+					"vacant": "Leer stehend"
+				}
 			},
 			"placeholders": {
 				"selectType": "Wählen Sie einen Immobilientyp",
+				"selectStatus": "Wählen Sie den Vermietungsstatus",
 				"name": "z.B. Meine Stadtwohnung",
 				"address": "Vollständige Adresse inkl. Stadt und Postleitzahl",
+				"latitude": "z.B. 52.520008",
+				"longitude": "z.B. 13.404954",
 				"yearBuilt": "z.B. 2005",
 				"price": "0,00",
 				"description": "Fügen Sie weitere Details zu Ihrer Immobilie hinzu..."
 			},
-			"help": {
-				"isRental": "Aktivieren Sie dies, wenn Sie diese Immobilie mieten und nicht besitzen",
-				"name": "Ein eindeutiger Name zur Identifizierung dieser Immobilie",
-				"currentValue": "Ihre Schätzung des aktuellen Marktwerts der Immobilie",
-				"description": "Fügen Sie wichtige Details über die Immobilie hinzu, die durch die anderen Felder nicht abgedeckt werden"
-			},
 			"validation": {
-				"nameRequired": "Bitte geben Sie einen Immobiliennamen ein (mindestens 2 Zeichen)",
-				"addressRequired": "Bitte geben Sie eine vollständige Adresse ein (mindestens 5 Zeichen)",
+				"nameRequired": "Bitte geben Sie einen Immobiliennamen ein",
+				"addressRequired": "Bitte geben Sie eine vollständige Adresse ein",
 				"typeRequired": "Bitte wählen Sie einen Immobilientyp",
+				"rentalStatusRequired": "Bitte wählen Sie einen Vermietungsstatus",
 				"squareMetersRequired": "Bitte geben Sie die Immobiliengröße ein",
 				"bedroomsRequired": "Bitte geben Sie die Anzahl der Schlafzimmer ein",
 				"bathroomsRequired": "Bitte geben Sie die Anzahl der Badezimmer ein"
 			},
 			"errors": {
 				"createFailed": "Beim Erstellen Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+			},
+			"success": {
+				"created": "Immobilie erfolgreich erstellt"
 			},
 			"actions": {
 				"cancel": "Abbrechen",
@@ -234,6 +243,17 @@
 			"duplex": "Zweifamilienhaus",
 			"commercial": "Gewerbeimmobilie",
 			"other": "Sonstiges"
+		},
+		"table": {
+			"name": "Name",
+			"address": "Adresse",
+			"status": "Status",
+			"lastUpdated": "Zuletzt aktualisiert",
+			"untitled": "Unbenannt"
+		},
+		"status": {
+			"active": "Aktiv",
+			"inactive": "Inaktiv"
 		}
 	}
 }
