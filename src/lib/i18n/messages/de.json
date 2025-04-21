@@ -294,6 +294,14 @@
 				"edit": "Immobilie bearbeiten",
 				"expenses": "Ausgaben verwalten"
 			}
+		},
+		"alerts": {
+			"storedProperties": {
+				"title": "Gespeicherte Immobilien verfügbar",
+				"description": "Sie haben {count} gespeicherte Immobilien, die importiert werden können.",
+				"import": "Immobilien importieren",
+				"dismiss": "Schließen"
+			}
 		}
 	}
 }

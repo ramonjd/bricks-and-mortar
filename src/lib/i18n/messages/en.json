@@ -294,6 +294,14 @@
 				"edit": "Edit Property",
 				"expenses": "Manage Expenses"
 			}
+		},
+		"alerts": {
+			"storedProperties": {
+				"title": "Stored Properties Available",
+				"description": "You have {count} stored properties that can be imported.",
+				"import": "Import Properties",
+				"dismiss": "Dismiss"
+			}
 		}
 	}
 }

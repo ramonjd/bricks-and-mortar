@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/form';
 import { toast } from 'sonner';
 import { Resolver } from 'react-hook-form';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 
@@ -44,13 +43,24 @@ export default function NewPropertyForm({
 }: NewPropertyFormProps) {
 	const t = useTranslations('properties');
 	const router = useRouter();
+
+	// Handle image uploads
+	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files && e.target.files.length > 0) {
+			const newImages = Array.from(e.target.files);
+			setImages((prevImages) => [...prevImages, ...newImages]);
+
+			// Create preview URLs for display
+			const newPreviewUrls = newImages.map((file) => URL.createObjectURL(file));
+			setImagePreviewUrls((prevUrls) => [...prevUrls, ...newPreviewUrls]);
+		}
+	};
+
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [currentStep, setCurrentStep] = useState(0);
-	const [direction, setDirection] = useState(0);
 	const [propertyId, setPropertyId] = useState<string | null>(null);
 	const [images, setImages] = useState<File[]>([]);
-	// Using the image_urls from form data
 	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
 
 	const formSchema = z.object({
@@ -505,18 +515,6 @@ export default function NewPropertyForm({
 		{ value: 'vacant', label: t('new.fields.rentalStatuses.vacant') },
 	];
 
-	// Handle image uploads
-	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files.length > 0) {
-			const newImages = Array.from(e.target.files);
-			setImages((prevImages) => [...prevImages, ...newImages]);
-
-			// Create preview URLs for display
-			const newPreviewUrls = newImages.map((file) => URL.createObjectURL(file));
-			setImagePreviewUrls((prevUrls) => [...prevUrls, ...newPreviewUrls]);
-		}
-	};
-
 	// Remove image at specific index
 	const removeImage = (index: number) => {
 		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
@@ -603,7 +601,6 @@ export default function NewPropertyForm({
 					const id = await createProperty();
 					if (id) {
 						setPropertyId(id);
-						setDirection(1);
 						setCurrentStep(currentStep + 1);
 					}
 				}
@@ -617,7 +614,6 @@ export default function NewPropertyForm({
 
 					const success = await updateProperty(propertyId, fieldsToUpdate);
 					if (success) {
-						setDirection(1);
 						setCurrentStep(currentStep + 1);
 					}
 				}
@@ -630,7 +626,6 @@ export default function NewPropertyForm({
 	// Navigate to previous step
 	const handlePrevious = () => {
 		if (currentStep > 0) {
-			setDirection(-1);
 			setCurrentStep(currentStep - 1);
 		}
 	};
@@ -666,22 +661,6 @@ export default function NewPropertyForm({
 			imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
 		};
 	}, [imagePreviewUrls]);
-
-	// Animation variants
-	const variants = {
-		enter: (direction: number) => ({
-			x: direction > 0 ? 1000 : -1000,
-			opacity: 0,
-		}),
-		center: {
-			x: 0,
-			opacity: 1,
-		},
-		exit: (direction: number) => ({
-			x: direction < 0 ? 1000 : -1000,
-			opacity: 0,
-		}),
-	};
 
 	return (
 		<Form {...form}>
@@ -719,20 +698,9 @@ export default function NewPropertyForm({
 
 					{/* Form steps with animation */}
 					<div className="relative h-[350px]">
-						<AnimatePresence initial={false} custom={direction} mode="wait">
-							<motion.div
-								key={currentStep}
-								custom={direction}
-								variants={variants}
-								initial="enter"
-								animate="center"
-								exit="exit"
-								transition={{ duration: 0.3, ease: 'easeInOut' }}
-								className="absolute top-0 left-0 right-0"
-							>
-								{steps[currentStep].component}
-							</motion.div>
-						</AnimatePresence>
+						<div className="absolute top-0 left-0 right-0">
+							{steps[currentStep].component}
+						</div>
 					</div>
 
 					{error && (
