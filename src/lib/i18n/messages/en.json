@@ -237,7 +237,8 @@
 				"finalizeFailed": "There was an error finalizing your property. Please try again."
 			},
 			"success": {
-				"created": "Property created successfully"
+				"created": "Property created successfully",
+				"addressFound": "Address found successfully"
 			},
 			"actions": {
 				"cancel": "Cancel",

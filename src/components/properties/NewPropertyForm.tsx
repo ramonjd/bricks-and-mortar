@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,11 +30,19 @@ import { Resolver } from 'react-hook-form';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 
-interface NewPropertyFormProps {
+// Declare Google Maps types
+declare global {
+	interface Window {
+		// @ts-expect-error - do later
+		google: typeof google;
+	}
+}
+
+type NewPropertyFormProps = {
 	userId: string;
 	locale: string;
 	prefilledData?: Partial<FormData>;
-}
+};
 
 export default function NewPropertyForm({
 	userId,
@@ -43,6 +51,50 @@ export default function NewPropertyForm({
 }: NewPropertyFormProps) {
 	const t = useTranslations('properties');
 	const router = useRouter();
+	const [isMapLoaded, setIsMapLoaded] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [currentStep, setCurrentStep] = useState(0);
+	const [propertyId, setPropertyId] = useState<string | null>(null);
+	const [images, setImages] = useState<File[]>([]);
+	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
+	const mapRef = useRef<HTMLDivElement>(null);
+	const [map, setMap] = useState<google.maps.Map | null>(null);
+	const [marker, setMarker] = useState<google.maps.Marker | null>(null);
+	const geocoder = useRef<google.maps.Geocoder | null>(null);
+
+	// Load Google Maps API
+	useEffect(() => {
+		if (!(window as any).google) {
+			const script = document.createElement('script');
+			const apiKey =
+				process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'YOUR_GOOGLE_MAPS_API_KEY';
+			script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+			script.async = true;
+			script.onload = () => setIsMapLoaded(true);
+			document.head.appendChild(script);
+			return () => {
+				document.head.removeChild(script);
+			};
+		} else {
+			setIsMapLoaded(true);
+		}
+	}, []);
+
+	// Initialize map when Google Maps API is loaded
+	useEffect(() => {
+		if (!isMapLoaded || !mapRef.current) return;
+
+		const mapOptions: google.maps.MapOptions = {
+			center: { lat: 40.749933, lng: -73.98633 },
+			zoom: 13,
+			mapTypeControl: false,
+		};
+
+		const newMap = new google.maps.Map(mapRef.current, mapOptions);
+		setMap(newMap);
+		geocoder.current = new google.maps.Geocoder();
+	}, [isMapLoaded]);
 
 	// Handle image uploads
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,20 +108,12 @@ export default function NewPropertyForm({
 		}
 	};
 
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-	const [currentStep, setCurrentStep] = useState(0);
-	const [propertyId, setPropertyId] = useState<string | null>(null);
-	const [images, setImages] = useState<File[]>([]);
-	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
-
 	const formSchema = z.object({
 		name: z.string().min(1, t('new.validation.nameRequired')),
 		address: z.string().min(1, t('new.validation.addressRequired')),
 		latitude: z.number().optional(),
 		longitude: z.number().optional(),
 		property_type: z.string().min(1, t('new.validation.typeRequired')),
-		rental_status: z.string().default('owner_occupied'),
 		bedrooms: z.number().min(0),
 		bathrooms: z.number().min(0),
 		square_meters: z.number().min(0),
@@ -89,7 +133,6 @@ export default function NewPropertyForm({
 			name: '',
 			address: '',
 			property_type: '',
-			rental_status: 'owner_occupied',
 			bedrooms: 0,
 			bathrooms: 0,
 			square_meters: 0,
@@ -99,17 +142,218 @@ export default function NewPropertyForm({
 			description: '',
 			status: 'active',
 			image_urls: [],
+			latitude: undefined,
+			longitude: undefined,
 			...prefilledData,
 		},
 	});
 
+	// Update the updateMarker function to also update the address field
+	const updateMarker = (lat: number, lng: number) => {
+		if (!map) return;
+
+		// Remove any existing markers
+		if (marker) {
+			marker.setMap(null);
+		}
+
+		// Create a new marker
+		const newMarker = new google.maps.Marker({
+			position: { lat, lng },
+			map: map,
+		});
+
+		// Update the marker state
+		setMarker(newMarker);
+
+		// Center the map on the marker
+		map.setCenter({ lat, lng });
+		map.setZoom(15);
+
+		// Update the address field if a valid address is found
+		if (geocoder.current) {
+			geocoder.current.geocode(
+				{ location: { lat, lng } },
+				(
+					results: google.maps.GeocoderResult[] | null,
+					status: google.maps.GeocoderStatus
+				) => {
+					if (status === 'OK' && results && results[0]) {
+						form.setValue('address', results[0].formatted_address);
+						toast.success(t('new.success.addressFound'));
+					}
+				}
+			);
+		}
+	};
+
+	// Initialize Google Maps API
+	useEffect(() => {
+		if (typeof window.google !== 'undefined' && mapRef.current) {
+			console.log('Google Maps API is loaded, initializing map');
+			const defaultLocation = { lat: 51.5074, lng: -0.1278 }; // London coordinates
+			const mapInstance = new window.google.maps.Map(mapRef.current, {
+				center: defaultLocation,
+				zoom: 13,
+			});
+			setMap(mapInstance);
+			geocoder.current = new window.google.maps.Geocoder();
+			setIsMapLoaded(true);
+			console.log('Map initialized, isMapLoaded set to true');
+		} else {
+			console.log('Google Maps API not loaded yet or mapRef not available');
+		}
+	}, []);
+
+	// Initialize map
+	useEffect(() => {
+		if (!isMapLoaded) {
+			console.log('Map not loaded yet, skipping initialization');
+			return;
+		}
+
+		const mapElement = document.getElementById('property-map');
+		if (!mapElement) {
+			console.log('Map element not found');
+			return;
+		}
+
+		console.log('Initializing map with Google Maps API');
+		const google = (window as unknown as { google: typeof google }).google;
+		const newMap = new google.maps.Map(mapElement, {
+			center: { lat: 40.7128, lng: -74.006 }, // Default to New York
+			zoom: 12,
+			mapTypeControl: false,
+		});
+		setMap(newMap);
+
+		// Add click listener to map
+		newMap.addListener('click', handleMapClick);
+
+		// Cleanup function
+		return () => {
+			if (marker) {
+				marker.setMap(null);
+			}
+		};
+	}, [isMapLoaded, form, t]);
+
+	// Initialize Google Places Autocomplete
+	useEffect(() => {
+		if (!isMapLoaded) {
+			console.log('Map not loaded yet, skipping address search initialization');
+			return;
+		}
+
+		console.log('Initializing address search');
+		const google = (window as unknown as { google: typeof google }).google;
+		const addressContainer = document.getElementById('address-search-container');
+		if (!addressContainer) {
+			console.log('Address search container not found');
+			return;
+		}
+
+		console.log('Address search container found, creating input element');
+		// Clear any existing content
+		addressContainer.innerHTML = '';
+
+		// Create input element for autocomplete
+		const input = document.createElement('input');
+		input.type = 'text';
+		input.className = 'w-full px-3 py-2 border rounded-md';
+		input.placeholder = t('new.placeholders.address');
+		addressContainer.appendChild(input);
+		console.log('Input element created and added to container');
+
+		// Create and configure the autocomplete
+		console.log('Creating autocomplete');
+		const autocomplete = new google.maps.places.Autocomplete(input, {
+			types: ['address'],
+		});
+		console.log('Autocomplete created');
+
+		// Add place_changed event listener
+		autocomplete.addListener('place_changed', () => {
+			const place = autocomplete.getPlace();
+
+			if (!place.geometry || !place.geometry.location) {
+				toast.error(t('new.errors.invalidAddress'));
+				return;
+			}
+
+			const lat = place.geometry.location.lat();
+			const lng = place.geometry.location.lng();
+
+			// Update form values
+			form.setValue('address', place.formatted_address || '');
+			form.setValue('latitude', lat);
+			form.setValue('longitude', lng);
+			toast.success(t('new.success.addressFound'));
+
+			// Update the marker
+			updateMarker(lat, lng);
+		});
+
+		// Add input event listener for manual address entry
+		input.addEventListener('input', (e: Event) => {
+			const inputElement = e.target as HTMLInputElement;
+			if (inputElement.value) {
+				const geocoder = new google.maps.Geocoder();
+				geocoder.geocode(
+					{ address: inputElement.value },
+					(
+						results: google.maps.GeocoderResult[] | null,
+						status: google.maps.GeocoderStatus
+					) => {
+						if (status === 'OK' && results && results[0]) {
+							const location = results[0].geometry.location;
+							const lat = location.lat();
+							const lng = location.lng();
+
+							// Update form values
+							form.setValue('address', results[0].formatted_address);
+							form.setValue('latitude', lat);
+							form.setValue('longitude', lng);
+
+							// Update the marker
+							updateMarker(lat, lng);
+
+							// Show success message
+							toast.success(t('new.success.addressFound'));
+						}
+					}
+				);
+			}
+		});
+	}, [isMapLoaded, form, t, map]);
+
+	// Update map when form values change
+	useEffect(() => {
+		if (!map || !isMapLoaded) return;
+
+		const lat = form.watch('latitude');
+		const lng = form.watch('longitude');
+
+		if (lat && lng) {
+			// Update the marker
+			updateMarker(lat, lng);
+		}
+
+		// Cleanup function
+		return () => {
+			if (marker) {
+				marker.setMap(null);
+			}
+		};
+	}, [map, isMapLoaded, form.watch('latitude'), form.watch('longitude')]);
+
 	const steps = [
-		// Step 1: Name
+		// Step 1: Name and Address
 		{
 			title: t('new.steps.step1'),
-			fields: ['name'],
+			fields: ['name', 'address', 'latitude', 'longitude'],
 			isValid: () => {
-				return !!form.getValues('name');
+				return !!form.getValues('name') && !!form.getValues('address');
 			},
 			component: (
 				<div className="space-y-4">
@@ -126,18 +370,15 @@ export default function NewPropertyForm({
 							</FormItem>
 						)}
 					/>
-				</div>
-			),
-		},
-		// Step 2: Address
-		{
-			title: t('new.steps.step2'),
-			fields: ['address', 'latitude', 'longitude'],
-			isValid: () => {
-				return !!form.getValues('address');
-			},
-			component: (
-				<div className="space-y-4">
+					<div className="space-y-2">
+						<FormLabel>{t('new.fields.address')}</FormLabel>
+						<div id="address-search-container" className="relative">
+							{/* PlaceAutocompleteElement will be inserted here */}
+						</div>
+						<p className="text-xs text-muted-foreground">
+							{t('new.googleMaps.placeholder')}
+						</p>
+					</div>
 					<FormField
 						control={form.control}
 						name="address"
@@ -148,6 +389,7 @@ export default function NewPropertyForm({
 									<Textarea
 										placeholder={t('new.placeholders.address')}
 										{...field}
+										readOnly
 									/>
 								</FormControl>
 								<FormMessage />
@@ -167,6 +409,7 @@ export default function NewPropertyForm({
 											step="any"
 											placeholder={t('new.placeholders.latitude')}
 											{...field}
+											value={field.value || ''}
 											onChange={(e) =>
 												field.onChange(
 													e.target.value
@@ -174,6 +417,7 @@ export default function NewPropertyForm({
 														: undefined
 												)
 											}
+											readOnly
 										/>
 									</FormControl>
 									<FormMessage />
@@ -192,6 +436,7 @@ export default function NewPropertyForm({
 											step="any"
 											placeholder={t('new.placeholders.longitude')}
 											{...field}
+											value={field.value || ''}
 											onChange={(e) =>
 												field.onChange(
 													e.target.value
@@ -199,6 +444,7 @@ export default function NewPropertyForm({
 														: undefined
 												)
 											}
+											readOnly
 										/>
 									</FormControl>
 									<FormMessage />
@@ -206,17 +452,16 @@ export default function NewPropertyForm({
 							)}
 						/>
 					</div>
-					{/* TODO: Add Google Maps integration here */}
-					<p className="text-sm text-muted-foreground">
-						{t('new.googleMaps.placeholder')}
-					</p>
+					<div className="mt-4">
+						<div id="property-map" className="w-full h-64 rounded-md border"></div>
+					</div>
 				</div>
 			),
 		},
-		// Step 3: Property Type, Status, Year Built
+		// Step 2: Property Type, Status, Year Built
 		{
-			title: t('new.steps.step3'),
-			fields: ['property_type', 'rental_status', 'year_built'],
+			title: t('new.steps.step2'),
+			fields: ['property_type', 'year_built'],
 			isValid: () => {
 				return !!form.getValues('property_type');
 			},
@@ -240,32 +485,6 @@ export default function NewPropertyForm({
 										{propertyTypes.map((type) => (
 											<SelectItem key={type.value} value={type.value}>
 												{type.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="rental_status"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('new.fields.rentalStatus')}</FormLabel>
-								<Select onValueChange={field.onChange} defaultValue={field.value}>
-									<FormControl>
-										<SelectTrigger>
-											<SelectValue
-												placeholder={t('new.placeholders.selectStatus')}
-											/>
-										</SelectTrigger>
-									</FormControl>
-									<SelectContent>
-										{rentalStatuses.map((status) => (
-											<SelectItem key={status.value} value={status.value}>
-												{status.label}
 											</SelectItem>
 										))}
 									</SelectContent>
@@ -303,9 +522,9 @@ export default function NewPropertyForm({
 				</div>
 			),
 		},
-		// Step 4: Rooms, Bathrooms, Size
+		// Step 3: Rooms, Bathrooms, Size
 		{
-			title: t('new.steps.step4'),
+			title: t('new.steps.step3'),
 			fields: ['bedrooms', 'bathrooms', 'square_meters'],
 			isValid: () => true,
 			component: (
@@ -380,9 +599,9 @@ export default function NewPropertyForm({
 				</div>
 			),
 		},
-		// Step 5: Purchase Price, Current Value
+		// Step 4: Purchase Price, Current Value
 		{
-			title: t('new.steps.step5'),
+			title: t('new.steps.step4'),
 			fields: ['purchase_price', 'current_value'],
 			isValid: () => true,
 			component: (
@@ -436,9 +655,9 @@ export default function NewPropertyForm({
 				</div>
 			),
 		},
-		// Step 6: Upload Photos
+		// Step 5: Upload Photos
 		{
-			title: t('new.steps.step6'),
+			title: t('new.steps.step5'),
 			fields: ['image_urls'],
 			isValid: () => true,
 			component: (
@@ -509,12 +728,6 @@ export default function NewPropertyForm({
 		{ value: 'other', label: t('types.other') },
 	];
 
-	const rentalStatuses = [
-		{ value: 'owner_occupied', label: t('new.fields.rentalStatuses.ownerOccupied') },
-		{ value: 'rented', label: t('new.fields.rentalStatuses.rented') },
-		{ value: 'vacant', label: t('new.fields.rentalStatuses.vacant') },
-	];
-
 	// Remove image at specific index
 	const removeImage = (index: number) => {
 		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
@@ -553,6 +766,9 @@ export default function NewPropertyForm({
 				.from('properties')
 				.insert({
 					name: form.getValues('name'),
+					address: form.getValues('address'),
+					latitude: form.getValues('latitude'),
+					longitude: form.getValues('longitude'),
 					created_by: userId,
 					status: 'active',
 				})
@@ -662,10 +878,26 @@ export default function NewPropertyForm({
 		};
 	}, [imagePreviewUrls]);
 
+	// Update map click handler with proper types
+	const handleMapClick = (e: google.maps.MapMouseEvent) => {
+		const latLng = e.latLng;
+		if (!latLng) return;
+
+		const lat = latLng.lat();
+		const lng = latLng.lng();
+
+		// Update form values for lat/long
+		form.setValue('latitude', lat);
+		form.setValue('longitude', lng);
+
+		// Update the marker
+		updateMarker(lat, lng);
+	};
+
 	return (
 		<Form {...form}>
 			<form className="space-y-8">
-				<div className="relative overflow-hidden">
+				<div className="relative">
 					{/* Progress indicator */}
 					<div className="mb-6">
 						<div className="flex justify-between mb-2">
@@ -696,12 +928,8 @@ export default function NewPropertyForm({
 					{/* Step title */}
 					<h2 className="text-xl font-medium mb-4">{steps[currentStep].title}</h2>
 
-					{/* Form steps with animation */}
-					<div className="relative h-[350px]">
-						<div className="absolute top-0 left-0 right-0">
-							{steps[currentStep].component}
-						</div>
-					</div>
+					{/* Form steps */}
+					<div className="mb-6">{steps[currentStep].component}</div>
 
 					{error && (
 						<div className="p-4 bg-red-50 text-red-700 rounded-md text-sm mt-4">

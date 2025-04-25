@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { DataTable } from '@/components/properties/DataTable';
 import { columns } from '@/components/properties/columns';
-
+import Link from 'next/link';
 export default async function PropertiesPage({
 	params: { locale },
 }: {
@@ -32,6 +32,7 @@ export default async function PropertiesPage({
 
 	return (
 		<div className="container mx-auto py-10">
+			<Link href="/dashboard/properties/new">Create Property</Link>
 			<DataTable columns={columns} data={properties || []} />
 		</div>
 	);
