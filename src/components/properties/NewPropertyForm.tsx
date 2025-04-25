@@ -123,40 +123,42 @@ export default function NewPropertyForm({
 		}
 	};
 
+	// Define the form schema with proper types
 	const formSchema = z.object({
+		// Step 1 fields
 		name: z.string().min(1, t('validation.required')),
 		address: z.string().min(1, t('validation.required')),
-		property_type: z.string().min(1, t('validation.required')),
 		latitude: z.number().optional(),
 		longitude: z.number().optional(),
+
+		// Step 2 fields
+		property_type: z.string().min(1, t('validation.required')),
+		year_built: z.number().min(1800).max(new Date().getFullYear()).optional(),
+
+		// Step 3 fields
 		bedrooms: z.number().min(0).optional(),
 		bathrooms: z.number().min(0).optional(),
 		square_meters: z.number().min(0).optional(),
-		year_built: z.number().min(1800).max(new Date().getFullYear()).optional(),
+
+		// Step 4 fields
 		purchase_price: z.number().min(0).optional(),
 		current_value: z.number().min(0).optional(),
 		description: z.string().optional(),
+
+		// Common fields
 		status: z.string().default('active'),
 		image_urls: z.array(z.string()).default([]),
 	});
 
 	type FormData = z.infer<typeof formSchema>;
 
+	// Update form initialization with proper types
 	const form = useForm<FormData>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			name: '',
 			address: '',
 			property_type: '',
-			latitude: undefined,
-			longitude: undefined,
-			bedrooms: undefined,
-			bathrooms: undefined,
-			square_meters: undefined,
-			year_built: undefined,
-			purchase_price: undefined,
-			current_value: undefined,
-			description: '',
 			status: 'active',
 			image_urls: [],
 		},
@@ -166,9 +168,13 @@ export default function NewPropertyForm({
 	// Add step validation state
 	const [stepValidation, setStepValidation] = useState<Record<number, boolean>>({});
 
-	// Validate current step
+	// Update validateCurrentStep to use proper typing
 	const validateCurrentStep = async () => {
 		const currentStepFields = steps[currentStep].fields;
+		const stepValues = form.getValues();
+		const stepData = Object.fromEntries(
+			currentStepFields.map((field) => [field, stepValues[field as keyof FormData]])
+		);
 		const isValid = await form.trigger(currentStepFields as any);
 		setStepValidation((prev) => ({ ...prev, [currentStep]: isValid }));
 		return isValid;
@@ -725,7 +731,7 @@ export default function NewPropertyForm({
 		}
 	};
 
-	// Update handleNext to use step validation
+	// Update handleNext to only submit current step's data
 	const handleNext = async () => {
 		if (currentStep < steps.length - 1) {
 			const isValid = await validateCurrentStep();
@@ -747,13 +753,13 @@ export default function NewPropertyForm({
 				}
 				// Subsequent steps - update property
 				else if (propertyId) {
-					const fieldsToUpdate = steps[currentStep].fields.reduce((acc, field) => {
-						// @ts-expect-error - dynamic field access
-						acc[field] = form.getValues(field);
-						return acc;
-					}, {} as Partial<FormData>);
+					const currentStepFields = steps[currentStep].fields;
+					const stepValues = form.getValues();
+					const stepData = Object.fromEntries(
+						currentStepFields.map((field) => [field, stepValues[field]])
+					);
 
-					const success = await updateProperty(propertyId, fieldsToUpdate);
+					const success = await updateProperty(propertyId, stepData);
 					if (success) {
 						setCurrentStep(currentStep + 1);
 					}
