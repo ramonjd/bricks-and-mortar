@@ -177,17 +177,14 @@
 			"description": "Füllen Sie die Details unten aus, um eine neue Immobilie zu Ihrem Portfolio hinzuzufügen.",
 			"sections": {
 				"basicInfo": "Grundinformationen",
+				"basicInfoDesc": "Geben Sie die grundlegenden Details zu Ihrer Immobilie ein, einschließlich Name und Standort.",
 				"propertyDetails": "Immobiliendetails",
+				"propertyDetailsDesc": "Geben Sie die physischen Eigenschaften Ihrer Immobilie an.",
 				"financialInfo": "Finanzinformationen",
-				"additionalInfo": "Zusätzliche Informationen"
-			},
-			"steps": {
-				"step1": "Immobilie benennen",
-				"step2": "Adresse eingeben",
-				"step3": "Immobiliendetails",
-				"step4": "Räume & Größe",
-				"step5": "Wertinformationen",
-				"step6": "Fotos hochladen"
+				"financialInfoDesc": "Geben Sie die finanziellen Details Ihrer Immobilieninvestition ein.",
+				"additionalInfo": "Zusätzliche Informationen",
+				"images": "Immobilienbilder",
+				"imagesDesc": "Laden Sie Fotos Ihrer Immobilie hoch, um ihre Eigenschaften und ihren Zustand zu präsentieren."
 			},
 			"fields": {
 				"propertyType": "Immobilientyp",
@@ -206,16 +203,16 @@
 				"monthlyRent": "Monatliche Miete",
 				"description": "Beschreibung",
 				"rentalStatuses": {
-					"ownerOccupied": "Eigennutzung",
+					"ownerOccupied": "Selbst genutzt",
 					"rented": "Vermietet",
-					"vacant": "Leer stehend"
+					"vacant": "Leerstehend"
 				}
 			},
 			"placeholders": {
 				"selectType": "Wählen Sie einen Immobilientyp",
-				"selectStatus": "Wählen Sie den Vermietungsstatus",
-				"name": "z.B. Meine Stadtwohnung",
-				"address": "Vollständige Adresse inkl. Stadt und Postleitzahl",
+				"selectStatus": "Wählen Sie einen Vermietungsstatus",
+				"name": "z.B. Meine Wohnung in der Innenstadt",
+				"address": "Vollständige Adresse inklusive Stadt und Postleitzahl",
 				"latitude": "z.B. 52.520008",
 				"longitude": "z.B. 13.404954",
 				"yearBuilt": "z.B. 2005",
@@ -233,27 +230,40 @@
 			},
 			"errors": {
 				"createFailed": "Beim Erstellen Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-				"updateFailed": "Bei der Aktualisierung Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-				"finalizeFailed": "Bei der Fertigstellung Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+				"updateFailed": "Beim Aktualisieren Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+				"finalizeFailed": "Beim Finalisieren Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+				"submitFailed": "Fehler beim Absenden des Formulars. Bitte versuchen Sie es erneut.",
+				"invalidAddress": "Ungültige Adresse ausgewählt",
+				"addressNotFound": "Adresse nicht gefunden"
 			},
 			"success": {
-				"created": "Immobilie erfolgreich erstellt"
+				"created": "Immobilie erfolgreich erstellt",
+				"addressFound": "Adresse erfolgreich gefunden"
 			},
 			"actions": {
 				"cancel": "Abbrechen",
 				"create": "Immobilie erstellen",
-				"creating": "Erstelle...",
+				"creating": "Wird erstellt...",
 				"next": "Weiter",
 				"previous": "Zurück",
 				"finish": "Fertigstellen",
-				"saving": "Speichern...",
-				"finalizing": "Fertigstellen..."
+				"saving": "Wird gespeichert...",
+				"finalizing": "Wird finalisiert...",
+				"save": "Immobilie speichern"
 			},
 			"googleMaps": {
-				"placeholder": "Google Maps-Integration wird hier verfügbar sein"
+				"placeholder": "Google Maps Integration wird hier verfügbar sein",
+				"searchPlaceholder": "Adresse suchen",
+				"noResults": "Keine Ergebnisse gefunden",
+				"error": "Fehler beim Laden von Google Maps"
 			},
 			"images": {
-				"dropzone": "Dateien hier ablegen oder zum Hochladen klicken"
+				"dropzone": "Dateien hier ablegen oder zum Hochladen klicken",
+				"maxFiles": "Maximal 5 Dateien",
+				"fileTypes": "Unterstützte Dateitypen: JPG, PNG",
+				"maxSize": "Maximale Dateigröße: 5MB",
+				"uploadError": "Fehler beim Hochladen des Bildes",
+				"removeImage": "Bild entfernen"
 			}
 		},
 		"types": {
@@ -263,14 +273,18 @@
 			"townhouse": "Reihenhaus",
 			"duplex": "Zweifamilienhaus",
 			"commercial": "Gewerbeimmobilie",
-			"other": "Sonstiges"
+			"land": "Grundstück",
+			"other": "Sonstiges",
+			"house": "Haus"
 		},
 		"table": {
 			"name": "Name",
 			"address": "Adresse",
 			"status": "Status",
 			"lastUpdated": "Zuletzt aktualisiert",
-			"untitled": "Unbenannt"
+			"untitled": "Unbenannt",
+			"actions": "Aktionen",
+			"edit": "Immobilie bearbeiten"
 		},
 		"status": {
 			"active": "Aktiv",

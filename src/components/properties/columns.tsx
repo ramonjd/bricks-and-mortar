@@ -4,6 +4,10 @@ import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
+import { Pencil } from 'lucide-react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export type Property = {
 	id: string;
@@ -47,6 +51,26 @@ const LastUpdatedCell = ({ value }: { value: string }) => {
 	return <div>{format(new Date(value), 'PPp')}</div>;
 };
 
+const ActionsHeader = () => {
+	const t = useTranslations('properties.table');
+	return <div>{t('actions')}</div>;
+};
+
+const ActionsCell = ({ row }: { row: any }) => {
+	const t = useTranslations('properties.table');
+	const params = useParams();
+	const locale = params.locale as string;
+	
+	return (
+		<Link href={`/${locale}/dashboard/properties/${row.original.id}`}>
+			<Button variant="ghost" size="icon">
+				<Pencil className="h-4 w-4" />
+				<span className="sr-only">{t('edit')}</span>
+			</Button>
+		</Link>
+	);
+};
+
 export const columns: ColumnDef<Property>[] = [
 	{
 		accessorKey: 'name',
@@ -66,5 +90,10 @@ export const columns: ColumnDef<Property>[] = [
 		accessorKey: 'updated_at',
 		header: () => <LastUpdatedHeader />,
 		cell: ({ row }) => <LastUpdatedCell value={row.getValue('updated_at')} />,
+	},
+	{
+		id: 'actions',
+		header: () => <ActionsHeader />,
+		cell: ({ row }) => <ActionsCell row={row} />,
 	},
 ];

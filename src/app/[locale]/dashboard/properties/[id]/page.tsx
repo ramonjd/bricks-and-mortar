@@ -72,7 +72,7 @@ export default async function PropertyDetailPage({
 
 						{property.image_urls && property.image_urls.length > 1 && (
 							<div className="grid grid-cols-4 gap-2 p-2">
-								{property.image_urls.slice(1, 5).map((url, index) => (
+								{property.image_urls.slice(1, 5).map((url: string, index: number) => (
 									<div
 										key={index}
 										className="relative h-20 rounded overflow-hidden"

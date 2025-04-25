@@ -25,9 +25,11 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form';
-import { toast } from 'sonner';
-import { Upload, X } from 'lucide-react';
+import { Toaster, toast } from 'sonner';
+import { Upload, X, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Declare Google Maps types
 declare global {
@@ -36,6 +38,33 @@ declare global {
 		google: typeof google;
 	}
 }
+
+// Define the form schema with proper types
+const formSchema = z.object({
+	// Basic information
+	name: z.string().min(1, 'Name is required'),
+	address: z.string().min(1, 'Address is required'),
+	latitude: z.number().optional(),
+	longitude: z.number().optional(),
+
+	// Property details
+	property_type: z.string().min(1, 'Property type is required'),
+	year_built: z.number().min(1800).max(new Date().getFullYear()).optional(),
+	bedrooms: z.number().min(0).optional(),
+	bathrooms: z.number().min(0).optional(),
+	square_meters: z.number().min(0).optional(),
+
+	// Financial information
+	purchase_price: z.number().min(0).optional(),
+	current_value: z.number().min(0).optional(),
+	description: z.string().optional(),
+
+	// Common fields
+	status: z.string().default('active'),
+	image_urls: z.array(z.string()).default([]),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 type NewPropertyFormProps = {
 	userId: string;
@@ -53,8 +82,6 @@ export default function NewPropertyForm({
 	const [isMapLoaded, setIsMapLoaded] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [currentStep, setCurrentStep] = useState(0);
-	const [propertyId, setPropertyId] = useState<string | null>(null);
 	const [images, setImages] = useState<File[]>([]);
 	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
 	const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -122,53 +149,24 @@ export default function NewPropertyForm({
 		}
 	};
 
-	// Define the form schema with proper types
-	const formSchema = z.object({
-		// Step 1 fields
-		name: z.string().min(1, t('validation.required')),
-		address: z.string().min(1, t('validation.required')),
-		latitude: z.number().optional(),
-		longitude: z.number().optional(),
-
-		// Step 2 fields
-		property_type: z.string().min(1, t('validation.required')),
-		year_built: z.number().min(1800).max(new Date().getFullYear()).optional(),
-
-		// Step 3 fields
-		bedrooms: z.number().min(0).optional(),
-		bathrooms: z.number().min(0).optional(),
-		square_meters: z.number().min(0).optional(),
-
-		// Step 4 fields
-		purchase_price: z.number().min(0).optional(),
-		current_value: z.number().min(0).optional(),
-		description: z.string().optional(),
-
-		// Common fields
-		status: z.string().default('active'),
-		image_urls: z.array(z.string()).default([]),
-	});
-
-	type FormData = z.infer<typeof formSchema>;
-
-	// Update form initialization with proper types
+	// Initialize form with proper types
 	const form = useForm<FormData>({
 		resolver: zodResolver(formSchema) as any,
 		defaultValues: {
-			name: '',
-			address: '',
-			property_type: t('new.placeholders.selectType'),
-			status: 'active',
-			latitude: 0,
-			longitude: 0,
-			year_built: new Date().getFullYear() - 10,
-			bedrooms: 0,
-			bathrooms: 0,
-			square_meters: 0,
-			purchase_price: 0,
-			current_value: 0,
-			description: '',
-			image_urls: [],
+			name: prefilledData.name || '',
+			address: prefilledData.address || '',
+			property_type: prefilledData.property_type || t('new.placeholders.selectType'),
+			status: prefilledData.status || 'active',
+			latitude: prefilledData.latitude || 0,
+			longitude: prefilledData.longitude || 0,
+			year_built: prefilledData.year_built || new Date().getFullYear() - 10,
+			bedrooms: prefilledData.bedrooms || 0,
+			bathrooms: prefilledData.bathrooms || 0,
+			square_meters: prefilledData.square_meters || 0,
+			purchase_price: prefilledData.purchase_price || 0,
+			current_value: prefilledData.current_value || 0,
+			description: prefilledData.description || '',
+			image_urls: prefilledData.image_urls || [],
 		},
 		mode: 'onBlur',
 	});
@@ -321,65 +319,194 @@ export default function NewPropertyForm({
 		};
 	}, [map, isMapLoaded, form.watch('latitude'), form.watch('longitude')]);
 
-	const steps = [
-		// Step 1: Name and Address
-		{
-			title: t('new.steps.step1'),
-			fields: ['name', 'address', 'latitude', 'longitude'],
-			isValid: () => {
-				return !!form.getValues('name') && !!form.getValues('address');
-			},
-			component: (
-				<div className="space-y-4">
-					<FormField
-						control={form.control}
-						name="name"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('new.fields.name')}</FormLabel>
-								<FormControl>
-									<Input placeholder={t('new.placeholders.name')} {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<div className="space-y-2">
-						<FormLabel>{t('new.fields.address')}</FormLabel>
-						<div id="address-search-container" className="relative">
-							{/* PlaceAutocompleteElement will be inserted here */}
+	// Property types
+	const propertyTypes = [
+		{ value: 'house', label: t('types.house') },
+		{ value: 'apartment', label: t('types.apartment') },
+		{ value: 'condo', label: t('types.condo') },
+		{ value: 'townhouse', label: t('types.townhouse') },
+		{ value: 'land', label: t('types.land') },
+		{ value: 'commercial', label: t('types.commercial') },
+	];
+
+	// Remove image at specific index
+	const removeImage = (index: number) => {
+		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+		setImagePreviewUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
+	};
+
+	// Upload images to storage
+	const uploadImages = async (images: File[]) => {
+		if (images.length === 0) return [];
+
+		const uploadPromises = images.map(async (image) => {
+			const fileExt = image.name.split('.').pop();
+			const fileName = `${Math.random()}.${fileExt}`;
+			const filePath = `${userId}/${fileName}`;
+
+			const { error: uploadError } = await supabase.storage
+				.from('properties')
+				.upload(filePath, image, {
+					cacheControl: '3600',
+					upsert: false
+				});
+
+			if (uploadError) {
+				console.error('Error uploading image:', uploadError);
+				toast.error(t('new.images.uploadError'));
+				return null;
+			}
+
+			const { data: urlData } = supabase.storage.from('properties').getPublicUrl(filePath);
+			return urlData.publicUrl;
+		});
+
+		const urls = await Promise.all(uploadPromises);
+		return urls.filter((url): url is string => url !== null);
+	};
+
+	// Update property
+	const updateProperty = async (id: string, data: Partial<FormData>) => {
+		try {
+			const { error } = await supabase.from('properties').update(data).eq('id', id);
+
+			if (error) throw error;
+
+			return true;
+		} catch (err) {
+			console.error('Error updating property:', err);
+			setError(t('new.errors.updateFailed'));
+			return false;
+		}
+	};
+
+	// Handle form submission
+	const onSubmit = async () => {
+		setIsSubmitting(true);
+		setError(null);
+
+		try {
+			const formValues = form.getValues();
+			
+			// Create the property
+			const { data: propertyData, error: createError } = await supabase
+				.from('properties')
+				.insert({
+					created_by: userId,
+					name: formValues.name,
+					address: formValues.address,
+					latitude: formValues.latitude,
+					longitude: formValues.longitude,
+					property_type: formValues.property_type,
+					year_built: formValues.year_built,
+					bedrooms: formValues.bedrooms,
+					bathrooms: formValues.bathrooms,
+					square_meters: formValues.square_meters,
+					purchase_price: formValues.purchase_price,
+					current_value: formValues.current_value,
+					description: formValues.description,
+					status: formValues.status,
+				})
+				.select('id')
+				.single();
+
+			if (createError || !propertyData) {
+				setError(createError?.message || 'Failed to create property');
+				return;
+			}
+
+			if (images.length > 0) {
+				const imageUrls = await uploadImages(images);
+				if (imageUrls.length > 0) {
+					await updateProperty(propertyData.id, { image_urls: imageUrls });
+				}
+			}
+
+			// Redirect to the property page
+			router.push(`/${locale}/dashboard/properties/${propertyData.id}`);
+		} catch (err) {
+			console.error('Error submitting form:', err);
+			setError(t('new.errors.submitFailed'));
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	// Handle map click
+	const handleMapClick = (e: google.maps.MapMouseEvent) => {
+		if (!e.latLng) return;
+
+		const lat = e.latLng.lat();
+		const lng = e.latLng.lng();
+
+		// Update form values
+		form.setValue('latitude', lat);
+		form.setValue('longitude', lng);
+
+		// Update the marker
+		updateMarker(lat, lng);
+	};
+
+	// Handle numeric input changes
+	const handleNumericChange = (
+		e: React.ChangeEvent<HTMLInputElement>,
+		onChange: (value: any) => void
+	) => {
+		const numValue = e.target.value === '' ? undefined : Number(e.target.value);
+		onChange(numValue);
+	};
+
+	return (
+		<Form {...form}>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+				{error && (
+					<Alert variant="destructive">
+						<AlertDescription>{error}</AlertDescription>
+					</Alert>
+				)}
+
+				<Card>
+					<CardHeader>
+						<CardTitle>{t('new.sections.basicInfo')}</CardTitle>
+						<CardDescription>{t('new.sections.basicInfoDesc')}</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-4">
+						<FormField
+							control={form.control}
+							name="name"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>{t('new.fields.name')}</FormLabel>
+									<FormControl>
+										<Input
+											placeholder={t('new.placeholders.name')}
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+
+						<div className="space-y-2">
+							<FormLabel>{t('new.fields.address')}</FormLabel>
+							<div id="address-search-container" className="relative">
+								{/* Google Places Autocomplete will be inserted here */}
+							</div>
+							<p className="text-xs text-muted-foreground">
+								{t('new.googleMaps.placeholder')}
+							</p>
 						</div>
-						<p className="text-xs text-muted-foreground">
-							{t('new.googleMaps.placeholder')}
-						</p>
-					</div>
-					<FormField
-						control={form.control}
-						name="address"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('new.fields.address')}</FormLabel>
-								<FormControl>
-									<Textarea
-										placeholder={t('new.placeholders.address')}
-										{...field}
-										readOnly
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<div className="grid grid-cols-2 gap-4">
+
 						<FormField
 							control={form.control}
-							name="latitude"
+							name="address"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>{t('new.fields.latitude')}</FormLabel>
+									<FormLabel>{t('new.fields.address')}</FormLabel>
 									<FormControl>
-										<Input
-											placeholder={t('new.placeholders.latitude')}
+										<Textarea
+											placeholder={t('new.placeholders.address')}
 											{...field}
 											readOnly
 										/>
@@ -388,48 +515,63 @@ export default function NewPropertyForm({
 								</FormItem>
 							)}
 						/>
+
+						<div className="grid grid-cols-2 gap-4">
+							<FormField
+								control={form.control}
+								name="latitude"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t('new.fields.latitude')}</FormLabel>
+										<FormControl>
+											<Input
+												placeholder={t('new.placeholders.latitude')}
+												{...field}
+												readOnly
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="longitude"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t('new.fields.longitude')}</FormLabel>
+										<FormControl>
+											<Input
+												placeholder={t('new.placeholders.longitude')}
+												{...field}
+												readOnly
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</div>
+
+						<div className="mt-4">
+							<div id="property-map" className="w-full h-64 rounded-md border"></div>
+						</div>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>{t('new.sections.propertyDetails')}</CardTitle>
+						<CardDescription>{t('new.sections.propertyDetailsDesc')}</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-4">
 						<FormField
 							control={form.control}
-							name="longitude"
+							name="property_type"
 							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{t('new.fields.longitude')}</FormLabel>
-									<FormControl>
-										<Input
-											placeholder={t('new.placeholders.longitude')}
-											{...field}
-											readOnly
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</div>
-					<div className="mt-4">
-						<div id="property-map" className="w-full h-64 rounded-md border"></div>
-					</div>
-				</div>
-			),
-		},
-		// Step 2: Property Type, Status, Year Built
-		{
-			title: t('new.steps.step2'),
-			fields: ['property_type', 'year_built'],
-			isValid: () => {
-				return !!form.getValues('property_type');
-			},
-			component: (
-				<div className="space-y-4">
-					<FormField
-						control={form.control}
-						name="property_type"
-						render={({ field }) => {
-							console.log({ field });
-							return (
 								<FormItem>
 									<FormLabel>{t('new.fields.propertyType')}</FormLabel>
-									<Select {...field}>
+									<Select value={field.value} onValueChange={field.onChange}>
 										<FormControl>
 											<SelectTrigger>
 												<SelectValue
@@ -447,488 +589,241 @@ export default function NewPropertyForm({
 									</Select>
 									<FormMessage />
 								</FormItem>
-							);
-						}}
-					/>
-					<FormField
-						control={form.control}
-						name="year_built"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('new.fields.yearBuilt')}</FormLabel>
-								<FormControl>
-									<Input
-										type="number"
-										min={new Date().getFullYear() - 100}
-										max={new Date().getFullYear()}
-										{...field}
-										onChange={(e) => handleNumericChange(field, e.target.value)}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</div>
-			),
-		},
-		// Step 3: Rooms, Bathrooms, Size
-		{
-			title: t('new.steps.step3'),
-			fields: ['bedrooms', 'bathrooms', 'square_meters'],
-			isValid: () => true,
-			component: (
-				<div className="space-y-4">
-					<FormField
-						control={form.control}
-						name="bedrooms"
-						render={({ field }) => {
-							console.log(field);
-							return (
+							)}
+						/>
+
+						<FormField
+							control={form.control}
+							name="year_built"
+							render={({ field }) => (
 								<FormItem>
-									<FormLabel>{t('new.fields.bedrooms')}</FormLabel>
+									<FormLabel>{t('new.fields.yearBuilt')}</FormLabel>
 									<FormControl>
 										<Input
-											type="number"
 											{...field}
-											onChange={(e) =>
-												handleNumericChange(field, e.target.value)
-											}
+											type="number"
+											min={new Date().getFullYear() - 100}
+											max={new Date().getFullYear()}
+											onChange={(e) => handleNumericChange(e, field.onChange)}
 										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
-							);
-						}}
-					/>
-					<FormField
-						control={form.control}
-						name="bathrooms"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('new.fields.bathrooms')}</FormLabel>
-								<FormControl>
-									<Input
-										type="number"
-										{...field}
-										min={0}
-										value={field.value ?? ''}
-										onChange={(e) => handleNumericChange(field, e.target.value)}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="square_meters"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('new.fields.squareMeters')}</FormLabel>
-								<FormControl>
-									<Input
-										type="number"
-										{...field}
-										min={0}
-										value={field.value ?? ''}
-										onChange={(e) => handleNumericChange(field, e.target.value)}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</div>
-			),
-		},
-		// Step 4: Purchase Price, Current Value
-		{
-			title: t('new.steps.step4'),
-			fields: ['purchase_price', 'current_value'],
-			isValid: () => true,
-			component: (
-				<div className="space-y-4">
-					<FormField
-						control={form.control}
-						name="purchase_price"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('new.fields.purchasePrice')}</FormLabel>
-								<FormControl>
-									<Input
-										type="number"
-										{...field}
-										min={0}
-										value={field.value ?? ''}
-										onChange={(e) => handleNumericChange(field, e.target.value)}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="current_value"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('new.fields.currentValue')}</FormLabel>
-								<FormControl>
-									<Input
-										type="number"
-										{...field}
-										min={0}
-										value={field.value ?? ''}
-										onChange={(e) => handleNumericChange(field, e.target.value)}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</div>
-			),
-		},
-		// Step 5: Upload Photos
-		{
-			title: t('new.steps.step5'),
-			fields: ['image_urls'],
-			isValid: () => true,
-			component: (
-				<div className="space-y-4">
-					<div className="flex flex-col items-center justify-center p-4 border-2 border-dashed rounded-md">
-						<label
-							htmlFor="image-upload"
-							className="flex flex-col items-center justify-center w-full h-32 cursor-pointer"
-						>
-							<Upload className="w-8 h-8 mb-2 text-gray-400" />
-							<span className="text-sm text-gray-500">
-								{t('new.images.dropzone')}
-							</span>
-							<input
-								id="image-upload"
-								type="file"
-								multiple
-								accept="image/*"
-								className="hidden"
-								onChange={handleImageChange}
-							/>
-						</label>
-					</div>
+							)}
+						/>
 
-					{imagePreviewUrls.length > 0 && (
-						<div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-							{imagePreviewUrls.map((url, index) => (
-								<div
-									key={index}
-									className="relative rounded-md overflow-hidden h-32"
-								>
-									<div className="absolute top-0 right-0 p-1 z-10">
-										<Button
-											type="button"
-											variant="destructive"
-											size="icon"
-											className="h-6 w-6"
-											onClick={() => removeImage(index)}
-										>
-											<X className="h-4 w-4" />
-										</Button>
-									</div>
-									<div className="h-full w-full relative">
-										<Image
-											src={url}
-											alt={`Property image ${index + 1}`}
-											fill
-											className="object-cover"
+						<div className="grid grid-cols-3 gap-4">
+							<FormField
+								control={form.control}
+								name="bedrooms"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t('new.fields.bedrooms')}</FormLabel>
+										<FormControl>
+											<Input
+												{...field}
+												type="number"
+												onChange={(e) =>
+													handleNumericChange(e, field.onChange)
+												}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="bathrooms"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t('new.fields.bathrooms')}</FormLabel>
+										<FormControl>
+											<Input
+												{...field}
+												type="number"
+												onChange={(e) =>
+													handleNumericChange(e, field.onChange)
+												}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="square_meters"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t('new.fields.squareMeters')}</FormLabel>
+										<FormControl>
+											<Input
+												{...field}
+												type="number"
+												onChange={(e) =>
+													handleNumericChange(e, field.onChange)
+												}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</div>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>{t('new.sections.financialInfo')}</CardTitle>
+						<CardDescription>{t('new.sections.financialInfoDesc')}</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-4">
+						<div className="grid grid-cols-2 gap-4">
+							<FormField
+								control={form.control}
+								name="purchase_price"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t('new.fields.purchasePrice')}</FormLabel>
+										<FormControl>
+											<Input
+												{...field}
+												type="number"
+												onChange={(e) =>
+													handleNumericChange(e, field.onChange)
+												}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="current_value"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t('new.fields.currentValue')}</FormLabel>
+										<FormControl>
+											<Input
+												{...field}
+												type="number"
+												onChange={(e) =>
+													handleNumericChange(e, field.onChange)
+												}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</div>
+
+						<FormField
+							control={form.control}
+							name="description"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>{t('new.fields.description')}</FormLabel>
+									<FormControl>
+										<Textarea
+											placeholder={t('new.placeholders.description')}
+											{...field}
 										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader>
+						<CardTitle>{t('new.sections.images')}</CardTitle>
+						<CardDescription>{t('new.sections.imagesDesc')}</CardDescription>
+					</CardHeader>
+					<CardContent className="space-y-4">
+						<div className="flex flex-col items-center justify-center p-4 border-2 border-dashed rounded-md">
+							<label
+								htmlFor="image-upload"
+								className="flex flex-col items-center justify-center w-full h-32 cursor-pointer"
+							>
+								<Upload className="w-8 h-8 mb-2 text-gray-400" />
+								<span className="text-sm text-gray-500">
+									{t('new.images.dropzone')}
+								</span>
+								<input
+									id="image-upload"
+									type="file"
+									multiple
+									accept="image/*"
+									className="hidden"
+									onChange={handleImageChange}
+								/>
+							</label>
+						</div>
+
+						{imagePreviewUrls.length > 0 && (
+							<div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+								{imagePreviewUrls.map((url, index) => (
+									<div
+										key={index}
+										className="relative rounded-md overflow-hidden h-32"
+									>
+										<div className="absolute top-0 right-0 p-1 z-10">
+											<Button
+												type="button"
+												variant="destructive"
+												size="icon"
+												className="h-6 w-6"
+												onClick={() => removeImage(index)}
+											>
+												<X className="h-4 w-4" />
+											</Button>
+										</div>
+										<div className="h-full w-full relative">
+											<Image
+												src={url}
+												alt={`Property image ${index + 1}`}
+												fill
+												className="object-cover"
+											/>
+										</div>
 									</div>
-								</div>
-							))}
-						</div>
-					)}
-				</div>
-			),
-		},
-	];
-
-	// Property types and rental statuses
-	const propertyTypes = [
-		{ value: 'singleFamily', label: t('types.singleFamily') },
-		{ value: 'apartment', label: t('types.apartment') },
-		{ value: 'condo', label: t('types.condo') },
-		{ value: 'townhouse', label: t('types.townhouse') },
-		{ value: 'duplex', label: t('types.duplex') },
-		{ value: 'commercial', label: t('types.commercial') },
-		{ value: 'other', label: t('types.other') },
-	];
-
-	// Remove image at specific index
-	const removeImage = (index: number) => {
-		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
-
-		// Also remove the preview URL and release the object URL
-		URL.revokeObjectURL(imagePreviewUrls[index]);
-		setImagePreviewUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
-	};
-
-	// Upload images to storage
-	const uploadImages = async () => {
-		if (images.length === 0 || !propertyId) return [];
-
-		const uploadPromises = images.map(async (image) => {
-			const filename = `${propertyId}/${Date.now()}-${image.name}`;
-			const { error } = await supabase.storage.from('properties').upload(filename, image);
-
-			if (error) {
-				console.error('Error uploading image:', error);
-				return null;
-			}
-
-			const { data: urlData } = supabase.storage.from('properties').getPublicUrl(filename);
-
-			return urlData.publicUrl;
-		});
-
-		const urls = await Promise.all(uploadPromises);
-		return urls.filter(Boolean) as string[];
-	};
-
-	// Create new property on first step
-	const createProperty = async () => {
-		try {
-			const { data, error } = await supabase
-				.from('properties')
-				.insert({
-					name: form.getValues('name'),
-					address: form.getValues('address'),
-					latitude: form.getValues('latitude'),
-					longitude: form.getValues('longitude'),
-					created_by: userId,
-					status: 'active',
-				})
-				.select('id')
-				.single();
-
-			if (error) throw error;
-			return data.id;
-		} catch (err) {
-			console.error('Error creating property:', err);
-			setError(t('new.errors.createFailed'));
-			toast.error(t('new.errors.createFailed'));
-			return null;
-		}
-	};
-
-	// Update property
-	const updateProperty = async (id: string, data: Partial<FormData>) => {
-		try {
-			const { error } = await supabase.from('properties').update(data).eq('id', id);
-
-			if (error) throw error;
-
-			return true;
-		} catch (err) {
-			console.error('Error updating property:', err);
-			setError(t('new.errors.updateFailed'));
-			toast.error(t('new.errors.updateFailed'));
-			return false;
-		}
-	};
-
-	// Update handleNext to only submit current step's data
-	const handleNext = async () => {
-		if (currentStep < steps.length - 1) {
-			// const isValid = await validateCurrentStep();
-			// if (!isValid) {
-			// 	return;
-			// }
-
-			console.log('Submitting step:', currentStep);
-			setIsSubmitting(true);
-
-			try {
-				// First step - create the property
-				if (currentStep === 0 && !propertyId) {
-					const id = await createProperty();
-					if (id) {
-						const currentStepFields = steps[currentStep].fields;
-						console.log(1, { currentStepFields });
-						const stepValues = form.getValues();
-						console.log(2, { stepValues });
-						setPropertyId(id);
-						setCurrentStep(currentStep + 1);
-					
-					}
-				}
-				// Subsequent steps - update property
-				else if (propertyId) {
-					const currentStepFields = steps[currentStep].fields;
-					console.log({ currentStepFields });
-					const stepValues = form.getValues();
-					console.log({ stepValues });
-
-					// Create stepData object with type safety
-					const stepData: Record<string, any> = {};
-					currentStepFields.forEach((field) => {
-						stepData[field] = (stepValues as any)[field];
-					});
-
-					const success = await updateProperty(propertyId, stepData);
-					if (success) {
-						setCurrentStep(currentStep + 1);
-					}
-				}
-			} finally {
-				setIsSubmitting(false);
-			}
-		}
-	};
-
-	// Update handlePrevious to maintain validation state
-	const handlePrevious = () => {
-		if (currentStep > 0) {
-			setCurrentStep(currentStep - 1);
-		}
-	};
-
-	// Add effect to validate step when fields change
-	// useEffect(() => {
-	// 	const currentStepFields = steps[currentStep].fields;
-	// 	const subscription = form.watch((value, { name, type }) => {
-	// 		if (name && currentStepFields.includes(name)) {
-	// 			validateCurrentStep();
-	// 		}
-	// 	});
-	// 	return () => subscription.unsubscribe();
-	// }, [currentStep, form]);
-
-	// Handle final submission
-	const handleFinish = async () => {
-		if (!propertyId) return;
-
-		setIsSubmitting(true);
-
-		try {
-			// Upload images and get URLs
-			const urls = await uploadImages();
-
-			// Update property with image URLs
-			await updateProperty(propertyId, { image_urls: urls });
-
-			toast.success(t('new.success.created'));
-			router.push(`/${locale}/dashboard/properties/${propertyId}`);
-			router.refresh();
-		} catch (err) {
-			console.error('Error finalizing property:', err);
-			setError(t('new.errors.finalizeFailed'));
-			toast.error(t('new.errors.finalizeFailed'));
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
-
-	// Clean up object URLs on unmount
-	useEffect(() => {
-		return () => {
-			imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
-		};
-	}, [imagePreviewUrls]);
-
-	// Update the handleMapClick function to use updateMarker
-	const handleMapClick = (e: google.maps.MapMouseEvent) => {
-		const latLng = e.latLng;
-		if (!latLng) return;
-		const lat = latLng.lat();
-		const lng = latLng.lng();
-
-		// Update form values for lat/long
-		form.setValue('latitude', lat);
-		form.setValue('longitude', lng);
-
-		// Update the marker
-		updateMarker(lat, lng);
-	};
-
-	const handleNumericChange = (field: any, value: string) => {
-		const numValue = value === '' ? undefined : Number(value);
-		field.onChange(numValue);
-	};
-	console.log({
-		form,
-		formControl: form.control,
-		currentStep,
-		steps,
-		fields: steps[currentStep].fields,
-	});
-	return (
-		<Form {...form}>
-			<form className="space-y-8">
-				<div className="relative">
-					{/* Progress indicator */}
-					<div className="mb-6">
-						<div className="flex justify-between mb-2">
-							{steps.map((step, index) => (
-								<div
-									key={index}
-									className={`flex items-center justify-center rounded-full h-8 w-8 text-xs 
-										${
-											index === currentStep
-												? 'bg-primary text-primary-foreground'
-												: index < currentStep
-													? 'bg-primary/80 text-primary-foreground'
-													: 'bg-muted text-muted-foreground'
-										}`}
-								>
-									{index + 1}
-								</div>
-							))}
-						</div>
-						<div className="relative w-full h-2 bg-muted rounded-full">
-							<div
-								className="absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-300 ease-in-out"
-								style={{ width: `${(currentStep / (steps.length - 1)) * 100}%` }}
-							/>
-						</div>
-					</div>
-
-					{/* Step title */}
-					<h2 className="text-xl font-medium mb-4">{steps[currentStep].title}</h2>
-
-					{/* Form steps */}
-					<div className="mb-6">{steps[currentStep].component}</div>
-
-					{error && (
-						<div className="p-4 bg-red-50 text-red-700 rounded-md text-sm mt-4">
-							{error}
-						</div>
-					)}
-
-					{/* Navigation buttons */}
-					<div className="flex justify-between mt-8">
-						<Button
-							type="button"
-							variant="outline"
-							onClick={handlePrevious}
-							disabled={currentStep === 0 || isSubmitting}
-						>
-							{t('new.actions.previous')}
-						</Button>
-
-						{currentStep < steps.length - 1 ? (
-							<Button type="button" onClick={handleNext} disabled={isSubmitting}>
-								{isSubmitting ? t('new.actions.saving') : t('new.actions.next')}
-							</Button>
-						) : (
-							<Button type="button" onClick={handleFinish} disabled={isSubmitting}>
-								{isSubmitting
-									? t('new.actions.finalizing')
-									: t('new.actions.finish')}
-							</Button>
+								))}
+							</div>
 						)}
-					</div>
+					</CardContent>
+				</Card>
+
+				<div className="flex justify-end space-x-4">
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() => router.back()}
+						disabled={isSubmitting}
+					>
+						{t('new.actions.cancel')}
+					</Button>
+					<Button type="submit" disabled={isSubmitting}>
+						{isSubmitting ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								{t('new.actions.saving')}
+							</>
+						) : (
+							t('new.actions.save')
+						)}
+					</Button>
 				</div>
 			</form>
+			<Toaster />
 		</Form>
 	);
 }
