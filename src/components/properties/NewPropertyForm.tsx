@@ -58,8 +58,7 @@ export default function NewPropertyForm({
 	const [propertyId, setPropertyId] = useState<string | null>(null);
 	const [images, setImages] = useState<File[]>([]);
 	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
-	const mapRef = useRef<HTMLDivElement>(null);
-	const [map, setMap] = useState<google.maps.Map | null>(null);
+			const [map, setMap] = useState<google.maps.Map | null>(null);
 	const [marker, setMarker] = useState<google.maps.Marker | null>(null);
 	const geocoder = useRef<google.maps.Geocoder | null>(null);
 
@@ -81,19 +80,35 @@ export default function NewPropertyForm({
 		}
 	}, []);
 
-	// Initialize map when Google Maps API is loaded
+	// Initialize Google Maps API
 	useEffect(() => {
-		if (!isMapLoaded || !mapRef.current) return;
+		if (!isMapLoaded) return;
 
-		const mapOptions: google.maps.MapOptions = {
-			center: { lat: 40.749933, lng: -73.98633 },
+		const mapElement = document.getElementById('property-map');
+		if (!mapElement) {
+			console.log('Map element not found');
+			return;
+		}
+
+		console.log('Initializing map with Google Maps API');
+		const mapInstance = new google.maps.Map(mapElement, {
+			center: { lat: 51.5074, lng: -0.1278 }, // London coordinates
 			zoom: 13,
 			mapTypeControl: false,
-		};
+		});
 
-		const newMap = new google.maps.Map(mapRef.current, mapOptions);
-		setMap(newMap);
+		setMap(mapInstance);
 		geocoder.current = new google.maps.Geocoder();
+
+		// Add click listener to map
+		mapInstance.addListener('click', handleMapClick);
+
+		// Cleanup function
+		return () => {
+			if (marker) {
+				marker.setMap(null);
+			}
+		};
 	}, [isMapLoaded]);
 
 	// Handle image uploads
@@ -109,17 +124,17 @@ export default function NewPropertyForm({
 	};
 
 	const formSchema = z.object({
-		name: z.string().min(1, t('new.validation.nameRequired')),
-		address: z.string().min(1, t('new.validation.addressRequired')),
+		name: z.string().min(1, t('validation.required')),
+		address: z.string().min(1, t('validation.required')),
+		property_type: z.string().min(1, t('validation.required')),
 		latitude: z.number().optional(),
 		longitude: z.number().optional(),
-		property_type: z.string().min(1, t('new.validation.typeRequired')),
-		bedrooms: z.number().min(0),
-		bathrooms: z.number().min(0),
-		square_meters: z.number().min(0),
-		year_built: z.number().min(1800).max(new Date().getFullYear()),
-		purchase_price: z.number().min(0),
-		current_value: z.number().min(0),
+		bedrooms: z.number().min(0).optional(),
+		bathrooms: z.number().min(0).optional(),
+		square_meters: z.number().min(0).optional(),
+		year_built: z.number().min(1800).max(new Date().getFullYear()).optional(),
+		purchase_price: z.number().min(0).optional(),
+		current_value: z.number().min(0).optional(),
 		description: z.string().optional(),
 		status: z.string().default('active'),
 		image_urls: z.array(z.string()).default([]),
@@ -128,24 +143,24 @@ export default function NewPropertyForm({
 	type FormData = z.infer<typeof formSchema>;
 
 	const form = useForm<FormData>({
-		resolver: zodResolver(formSchema) as Resolver<FormData>,
+		resolver: zodResolver(formSchema),
 		defaultValues: {
 			name: '',
 			address: '',
 			property_type: '',
-			bedrooms: 0,
-			bathrooms: 0,
-			square_meters: 0,
-			year_built: new Date().getFullYear(),
-			purchase_price: 0,
-			current_value: 0,
+			latitude: undefined,
+			longitude: undefined,
+			bedrooms: undefined,
+			bathrooms: undefined,
+			square_meters: undefined,
+			year_built: undefined,
+			purchase_price: undefined,
+			current_value: undefined,
 			description: '',
 			status: 'active',
 			image_urls: [],
-			latitude: undefined,
-			longitude: undefined,
-			...prefilledData,
 		},
+		mode: 'onChange',
 	});
 
 	// Update the updateMarker function to also update the address field
@@ -186,57 +201,6 @@ export default function NewPropertyForm({
 			);
 		}
 	};
-
-	// Initialize Google Maps API
-	useEffect(() => {
-		if (typeof window.google !== 'undefined' && mapRef.current) {
-			console.log('Google Maps API is loaded, initializing map');
-			const defaultLocation = { lat: 51.5074, lng: -0.1278 }; // London coordinates
-			const mapInstance = new window.google.maps.Map(mapRef.current, {
-				center: defaultLocation,
-				zoom: 13,
-			});
-			setMap(mapInstance);
-			geocoder.current = new window.google.maps.Geocoder();
-			setIsMapLoaded(true);
-			console.log('Map initialized, isMapLoaded set to true');
-		} else {
-			console.log('Google Maps API not loaded yet or mapRef not available');
-		}
-	}, []);
-
-	// Initialize map
-	useEffect(() => {
-		if (!isMapLoaded) {
-			console.log('Map not loaded yet, skipping initialization');
-			return;
-		}
-
-		const mapElement = document.getElementById('property-map');
-		if (!mapElement) {
-			console.log('Map element not found');
-			return;
-		}
-
-		console.log('Initializing map with Google Maps API');
-		const google = (window as unknown as { google: typeof google }).google;
-		const newMap = new google.maps.Map(mapElement, {
-			center: { lat: 40.7128, lng: -74.006 }, // Default to New York
-			zoom: 12,
-			mapTypeControl: false,
-		});
-		setMap(newMap);
-
-		// Add click listener to map
-		newMap.addListener('click', handleMapClick);
-
-		// Cleanup function
-		return () => {
-			if (marker) {
-				marker.setMap(null);
-			}
-		};
-	}, [isMapLoaded, form, t]);
 
 	// Initialize Google Places Autocomplete
 	useEffect(() => {
@@ -473,7 +437,7 @@ export default function NewPropertyForm({
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>{t('new.fields.propertyType')}</FormLabel>
-								<Select onValueChange={field.onChange} defaultValue={field.value}>
+								<Select onValueChange={field.onChange} value={field.value}>
 									<FormControl>
 										<SelectTrigger>
 											<SelectValue
@@ -502,17 +466,10 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
-										min="1800"
+										min={1800}
 										max={new Date().getFullYear()}
-										placeholder={t('new.placeholders.yearBuilt')}
-										{...field}
-										onChange={(e) =>
-											field.onChange(
-												e.target.value
-													? parseInt(e.target.value, 10)
-													: undefined
-											)
-										}
+										value={field.value ?? ''}
+										onChange={(e) => handleNumericChange(field, e.target.value)}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -538,13 +495,9 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
-										min="0"
-										{...field}
-										onChange={(e) =>
-											field.onChange(
-												e.target.value ? parseInt(e.target.value, 10) : 0
-											)
-										}
+										min={0}
+										value={field.value ?? ''}
+										onChange={(e) => handleNumericChange(field, e.target.value)}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -560,14 +513,9 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
-										min="0"
-										step="0.5"
-										{...field}
-										onChange={(e) =>
-											field.onChange(
-												e.target.value ? parseFloat(e.target.value) : 0
-											)
-										}
+										min={0}
+										value={field.value ?? ''}
+										onChange={(e) => handleNumericChange(field, e.target.value)}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -583,13 +531,9 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
-										min="0"
-										{...field}
-										onChange={(e) =>
-											field.onChange(
-												e.target.value ? parseInt(e.target.value, 10) : 0
-											)
-										}
+										min={0}
+										value={field.value ?? ''}
+										onChange={(e) => handleNumericChange(field, e.target.value)}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -615,14 +559,9 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
-										min="0"
-										placeholder={t('new.placeholders.price')}
-										{...field}
-										onChange={(e) =>
-											field.onChange(
-												e.target.value ? parseInt(e.target.value, 10) : 0
-											)
-										}
+										min={0}
+										value={field.value ?? ''}
+										onChange={(e) => handleNumericChange(field, e.target.value)}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -638,14 +577,9 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
-										min="0"
-										placeholder={t('new.placeholders.price')}
-										{...field}
-										onChange={(e) =>
-											field.onChange(
-												e.target.value ? parseInt(e.target.value, 10) : 0
-											)
-										}
+										min={0}
+										value={field.value ?? ''}
+										onChange={(e) => handleNumericChange(field, e.target.value)}
 									/>
 								</FormControl>
 								<FormMessage />
@@ -878,11 +812,10 @@ export default function NewPropertyForm({
 		};
 	}, [imagePreviewUrls]);
 
-	// Update map click handler with proper types
+	// Update the handleMapClick function to use updateMarker
 	const handleMapClick = (e: google.maps.MapMouseEvent) => {
 		const latLng = e.latLng;
 		if (!latLng) return;
-
 		const lat = latLng.lat();
 		const lng = latLng.lng();
 
@@ -892,6 +825,11 @@ export default function NewPropertyForm({
 
 		// Update the marker
 		updateMarker(lat, lng);
+	};
+
+	const handleNumericChange = (field: any, value: string) => {
+		const numValue = value === '' ? undefined : Number(value);
+		field.onChange(numValue);
 	};
 
 	return (
