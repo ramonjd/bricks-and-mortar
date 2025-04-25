@@ -26,7 +26,6 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { toast } from 'sonner';
-import { Resolver } from 'react-hook-form';
 import { Upload, X } from 'lucide-react';
 import Image from 'next/image';
 
@@ -154,31 +153,25 @@ export default function NewPropertyForm({
 
 	// Update form initialization with proper types
 	const form = useForm<FormData>({
-		resolver: zodResolver(formSchema),
+		resolver: zodResolver(formSchema) as any,
 		defaultValues: {
 			name: '',
 			address: '',
-			property_type: '',
+			property_type: t('new.placeholders.selectType'),
 			status: 'active',
+			latitude: 0,
+			longitude: 0,
+			year_built: new Date().getFullYear() - 10,
+			bedrooms: 0,
+			bathrooms: 0,
+			square_meters: 0,
+			purchase_price: 0,
+			current_value: 0,
+			description: '',
 			image_urls: [],
 		},
-		mode: 'onChange',
+		mode: 'onBlur',
 	});
-
-	// Add step validation state
-	const [stepValidation, setStepValidation] = useState<Record<number, boolean>>({});
-
-	// Update validateCurrentStep to use proper typing
-	const validateCurrentStep = async () => {
-		const currentStepFields = steps[currentStep].fields;
-		const stepValues = form.getValues();
-		const stepData = Object.fromEntries(
-			currentStepFields.map((field) => [field, stepValues[field as keyof FormData]])
-		);
-		const isValid = await form.trigger(currentStepFields as any);
-		setStepValidation((prev) => ({ ...prev, [currentStep]: isValid }));
-		return isValid;
-	};
 
 	// Update the updateMarker function to also update the address field
 	const updateMarker = (lat: number, lng: number) => {
@@ -431,28 +424,31 @@ export default function NewPropertyForm({
 					<FormField
 						control={form.control}
 						name="property_type"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('new.fields.propertyType')}</FormLabel>
-								<Select onValueChange={field.onChange} value={field.value}>
-									<FormControl>
-										<SelectTrigger>
-											<SelectValue
-												placeholder={t('new.placeholders.selectType')}
-											/>
-										</SelectTrigger>
-									</FormControl>
-									<SelectContent>
-										{propertyTypes.map((type) => (
-											<SelectItem key={type.value} value={type.value}>
-												{type.label}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-								<FormMessage />
-							</FormItem>
-						)}
+						render={({ field }) => {
+							console.log({ field });
+							return (
+								<FormItem>
+									<FormLabel>{t('new.fields.propertyType')}</FormLabel>
+									<Select {...field}>
+										<FormControl>
+											<SelectTrigger>
+												<SelectValue
+													placeholder={t('new.placeholders.selectType')}
+												/>
+											</SelectTrigger>
+										</FormControl>
+										<SelectContent>
+											{propertyTypes.map((type) => (
+												<SelectItem key={type.value} value={type.value}>
+													{type.label}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									<FormMessage />
+								</FormItem>
+							);
+						}}
 					/>
 					<FormField
 						control={form.control}
@@ -463,7 +459,7 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
-										min={1800}
+										min={new Date().getFullYear() - 100}
 										max={new Date().getFullYear()}
 										{...field}
 										onChange={(e) => handleNumericChange(field, e.target.value)}
@@ -486,19 +482,24 @@ export default function NewPropertyForm({
 					<FormField
 						control={form.control}
 						name="bedrooms"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('new.fields.bedrooms')}</FormLabel>
-								<FormControl>
-									<Input
-										type="number"
-										{...field}
-										onChange={(e) => handleNumericChange(field, e.target.value)}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
+						render={({ field }) => {
+							console.log(field);
+							return (
+								<FormItem>
+									<FormLabel>{t('new.fields.bedrooms')}</FormLabel>
+									<FormControl>
+										<Input
+											type="number"
+											{...field}
+											onChange={(e) =>
+												handleNumericChange(field, e.target.value)
+											}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							);
+						}}
 					/>
 					<FormField
 						control={form.control}
@@ -509,6 +510,7 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
+										{...field}
 										min={0}
 										value={field.value ?? ''}
 										onChange={(e) => handleNumericChange(field, e.target.value)}
@@ -527,6 +529,7 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
+										{...field}
 										min={0}
 										value={field.value ?? ''}
 										onChange={(e) => handleNumericChange(field, e.target.value)}
@@ -555,6 +558,7 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
+										{...field}
 										min={0}
 										value={field.value ?? ''}
 										onChange={(e) => handleNumericChange(field, e.target.value)}
@@ -573,6 +577,7 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
+										{...field}
 										min={0}
 										value={field.value ?? ''}
 										onChange={(e) => handleNumericChange(field, e.target.value)}
@@ -734,10 +739,10 @@ export default function NewPropertyForm({
 	// Update handleNext to only submit current step's data
 	const handleNext = async () => {
 		if (currentStep < steps.length - 1) {
-			const isValid = await validateCurrentStep();
-			if (!isValid) {
-				return;
-			}
+			// const isValid = await validateCurrentStep();
+			// if (!isValid) {
+			// 	return;
+			// }
 
 			console.log('Submitting step:', currentStep);
 			setIsSubmitting(true);
@@ -747,17 +752,27 @@ export default function NewPropertyForm({
 				if (currentStep === 0 && !propertyId) {
 					const id = await createProperty();
 					if (id) {
+						const currentStepFields = steps[currentStep].fields;
+						console.log(1, { currentStepFields });
+						const stepValues = form.getValues();
+						console.log(2, { stepValues });
 						setPropertyId(id);
 						setCurrentStep(currentStep + 1);
+					
 					}
 				}
 				// Subsequent steps - update property
 				else if (propertyId) {
 					const currentStepFields = steps[currentStep].fields;
+					console.log({ currentStepFields });
 					const stepValues = form.getValues();
-					const stepData = Object.fromEntries(
-						currentStepFields.map((field) => [field, stepValues[field]])
-					);
+					console.log({ stepValues });
+
+					// Create stepData object with type safety
+					const stepData: Record<string, any> = {};
+					currentStepFields.forEach((field) => {
+						stepData[field] = (stepValues as any)[field];
+					});
 
 					const success = await updateProperty(propertyId, stepData);
 					if (success) {
@@ -778,15 +793,15 @@ export default function NewPropertyForm({
 	};
 
 	// Add effect to validate step when fields change
-	useEffect(() => {
-		const currentStepFields = steps[currentStep].fields;
-		const subscription = form.watch((value, { name, type }) => {
-			if (name && currentStepFields.includes(name)) {
-				validateCurrentStep();
-			}
-		});
-		return () => subscription.unsubscribe();
-	}, [currentStep, form]);
+	// useEffect(() => {
+	// 	const currentStepFields = steps[currentStep].fields;
+	// 	const subscription = form.watch((value, { name, type }) => {
+	// 		if (name && currentStepFields.includes(name)) {
+	// 			validateCurrentStep();
+	// 		}
+	// 	});
+	// 	return () => subscription.unsubscribe();
+	// }, [currentStep, form]);
 
 	// Handle final submission
 	const handleFinish = async () => {
@@ -839,7 +854,13 @@ export default function NewPropertyForm({
 		const numValue = value === '' ? undefined : Number(value);
 		field.onChange(numValue);
 	};
-
+	console.log({
+		form,
+		formControl: form.control,
+		currentStep,
+		steps,
+		fields: steps[currentStep].fields,
+	});
 	return (
 		<Form {...form}>
 			<form className="space-y-8">
