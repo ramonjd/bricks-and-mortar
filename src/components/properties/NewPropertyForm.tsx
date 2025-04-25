@@ -58,7 +58,7 @@ export default function NewPropertyForm({
 	const [propertyId, setPropertyId] = useState<string | null>(null);
 	const [images, setImages] = useState<File[]>([]);
 	const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
-			const [map, setMap] = useState<google.maps.Map | null>(null);
+	const [map, setMap] = useState<google.maps.Map | null>(null);
 	const [marker, setMarker] = useState<google.maps.Marker | null>(null);
 	const geocoder = useRef<google.maps.Geocoder | null>(null);
 
@@ -162,6 +162,17 @@ export default function NewPropertyForm({
 		},
 		mode: 'onChange',
 	});
+
+	// Add step validation state
+	const [stepValidation, setStepValidation] = useState<Record<number, boolean>>({});
+
+	// Validate current step
+	const validateCurrentStep = async () => {
+		const currentStepFields = steps[currentStep].fields;
+		const isValid = await form.trigger(currentStepFields as any);
+		setStepValidation((prev) => ({ ...prev, [currentStep]: isValid }));
+		return isValid;
+	};
 
 	// Update the updateMarker function to also update the address field
 	const updateMarker = (lat: number, lng: number) => {
@@ -369,18 +380,8 @@ export default function NewPropertyForm({
 									<FormLabel>{t('new.fields.latitude')}</FormLabel>
 									<FormControl>
 										<Input
-											type="number"
-											step="any"
 											placeholder={t('new.placeholders.latitude')}
 											{...field}
-											value={field.value || ''}
-											onChange={(e) =>
-												field.onChange(
-													e.target.value
-														? parseFloat(e.target.value)
-														: undefined
-												)
-											}
 											readOnly
 										/>
 									</FormControl>
@@ -396,18 +397,8 @@ export default function NewPropertyForm({
 									<FormLabel>{t('new.fields.longitude')}</FormLabel>
 									<FormControl>
 										<Input
-											type="number"
-											step="any"
 											placeholder={t('new.placeholders.longitude')}
 											{...field}
-											value={field.value || ''}
-											onChange={(e) =>
-												field.onChange(
-													e.target.value
-														? parseFloat(e.target.value)
-														: undefined
-												)
-											}
 											readOnly
 										/>
 									</FormControl>
@@ -468,7 +459,7 @@ export default function NewPropertyForm({
 										type="number"
 										min={1800}
 										max={new Date().getFullYear()}
-										value={field.value ?? ''}
+										{...field}
 										onChange={(e) => handleNumericChange(field, e.target.value)}
 									/>
 								</FormControl>
@@ -495,8 +486,7 @@ export default function NewPropertyForm({
 								<FormControl>
 									<Input
 										type="number"
-										min={0}
-										value={field.value ?? ''}
+										{...field}
 										onChange={(e) => handleNumericChange(field, e.target.value)}
 									/>
 								</FormControl>
@@ -735,14 +725,15 @@ export default function NewPropertyForm({
 		}
 	};
 
-	// Navigate to next step and save data
+	// Update handleNext to use step validation
 	const handleNext = async () => {
 		if (currentStep < steps.length - 1) {
-			if (!steps[currentStep].isValid()) {
-				form.trigger(steps[currentStep].fields as any);
+			const isValid = await validateCurrentStep();
+			if (!isValid) {
 				return;
 			}
 
+			console.log('Submitting step:', currentStep);
 			setIsSubmitting(true);
 
 			try {
@@ -773,12 +764,23 @@ export default function NewPropertyForm({
 		}
 	};
 
-	// Navigate to previous step
+	// Update handlePrevious to maintain validation state
 	const handlePrevious = () => {
 		if (currentStep > 0) {
 			setCurrentStep(currentStep - 1);
 		}
 	};
+
+	// Add effect to validate step when fields change
+	useEffect(() => {
+		const currentStepFields = steps[currentStep].fields;
+		const subscription = form.watch((value, { name, type }) => {
+			if (name && currentStepFields.includes(name)) {
+				validateCurrentStep();
+			}
+		});
+		return () => subscription.unsubscribe();
+	}, [currentStep, form]);
 
 	// Handle final submission
 	const handleFinish = async () => {
