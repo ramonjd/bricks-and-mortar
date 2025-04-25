@@ -177,9 +177,14 @@
 			"description": "Füllen Sie die Details unten aus, um eine neue Immobilie zu Ihrem Portfolio hinzuzufügen.",
 			"sections": {
 				"basicInfo": "Grundinformationen",
+				"basicInfoDesc": "Geben Sie die grundlegenden Details zu Ihrer Immobilie ein, einschließlich Name und Standort.",
 				"propertyDetails": "Immobiliendetails",
+				"propertyDetailsDesc": "Geben Sie die physischen Eigenschaften Ihrer Immobilie an.",
 				"financialInfo": "Finanzinformationen",
-				"additionalInfo": "Zusätzliche Informationen"
+				"financialInfoDesc": "Geben Sie die finanziellen Details Ihrer Immobilieninvestition ein.",
+				"additionalInfo": "Zusätzliche Informationen",
+				"images": "Immobilienbilder",
+				"imagesDesc": "Laden Sie Fotos Ihrer Immobilie hoch, um ihre Eigenschaften und ihren Zustand zu präsentieren."
 			},
 			"fields": {
 				"propertyType": "Immobilientyp",
@@ -198,16 +203,16 @@
 				"monthlyRent": "Monatliche Miete",
 				"description": "Beschreibung",
 				"rentalStatuses": {
-					"ownerOccupied": "Eigennutzung",
+					"ownerOccupied": "Selbst genutzt",
 					"rented": "Vermietet",
-					"vacant": "Leer stehend"
+					"vacant": "Leerstehend"
 				}
 			},
 			"placeholders": {
 				"selectType": "Wählen Sie einen Immobilientyp",
-				"selectStatus": "Wählen Sie den Vermietungsstatus",
-				"name": "z.B. Meine Stadtwohnung",
-				"address": "Vollständige Adresse inkl. Stadt und Postleitzahl",
+				"selectStatus": "Wählen Sie einen Vermietungsstatus",
+				"name": "z.B. Meine Wohnung in der Innenstadt",
+				"address": "Vollständige Adresse inklusive Stadt und Postleitzahl",
 				"latitude": "z.B. 52.520008",
 				"longitude": "z.B. 13.404954",
 				"yearBuilt": "z.B. 2005",
@@ -224,15 +229,41 @@
 				"bathroomsRequired": "Bitte geben Sie die Anzahl der Badezimmer ein"
 			},
 			"errors": {
-				"createFailed": "Beim Erstellen Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+				"createFailed": "Beim Erstellen Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+				"updateFailed": "Beim Aktualisieren Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+				"finalizeFailed": "Beim Finalisieren Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+				"submitFailed": "Fehler beim Absenden des Formulars. Bitte versuchen Sie es erneut.",
+				"invalidAddress": "Ungültige Adresse ausgewählt",
+				"addressNotFound": "Adresse nicht gefunden"
 			},
 			"success": {
-				"created": "Immobilie erfolgreich erstellt"
+				"created": "Immobilie erfolgreich erstellt",
+				"addressFound": "Adresse erfolgreich gefunden"
 			},
 			"actions": {
 				"cancel": "Abbrechen",
 				"create": "Immobilie erstellen",
-				"creating": "Erstelle..."
+				"creating": "Wird erstellt...",
+				"next": "Weiter",
+				"previous": "Zurück",
+				"finish": "Fertigstellen",
+				"saving": "Wird gespeichert...",
+				"finalizing": "Wird finalisiert...",
+				"save": "Immobilie speichern"
+			},
+			"googleMaps": {
+				"placeholder": "Google Maps Integration wird hier verfügbar sein",
+				"searchPlaceholder": "Adresse suchen",
+				"noResults": "Keine Ergebnisse gefunden",
+				"error": "Fehler beim Laden von Google Maps"
+			},
+			"images": {
+				"dropzone": "Dateien hier ablegen oder zum Hochladen klicken",
+				"maxFiles": "Maximal 5 Dateien",
+				"fileTypes": "Unterstützte Dateitypen: JPG, PNG",
+				"maxSize": "Maximale Dateigröße: 5MB",
+				"uploadError": "Fehler beim Hochladen des Bildes",
+				"removeImage": "Bild entfernen"
 			}
 		},
 		"types": {
@@ -242,18 +273,56 @@
 			"townhouse": "Reihenhaus",
 			"duplex": "Zweifamilienhaus",
 			"commercial": "Gewerbeimmobilie",
-			"other": "Sonstiges"
+			"land": "Grundstück",
+			"other": "Sonstiges",
+			"house": "Haus"
 		},
 		"table": {
 			"name": "Name",
 			"address": "Adresse",
 			"status": "Status",
 			"lastUpdated": "Zuletzt aktualisiert",
-			"untitled": "Unbenannt"
+			"untitled": "Unbenannt",
+			"actions": "Aktionen",
+			"edit": "Immobilie bearbeiten",
+			"search": "Immobilien suchen...",
+			"noResults": "Keine Immobilien gefunden",
+			"pageInfo": "Seite {page} von {totalPages}",
+			"previousPage": "Vorherige Seite",
+			"nextPage": "Nächste Seite",
+			"totalProperties": "{count} Immobilien",
+			"searchResults": "{count} von {total} Immobilien"
 		},
 		"status": {
 			"active": "Aktiv",
 			"inactive": "Inaktiv"
+		},
+		"backToList": "Zurück zu Immobilien",
+		"detail": {
+			"noImages": "Keine Bilder verfügbar",
+			"location": "Standort",
+			"description": "Beschreibung",
+			"propertyDetails": "Immobiliendetails",
+			"propertyType": "Immobilientyp",
+			"yearBuilt": "Baujahr",
+			"bedrooms": "Schlafzimmer",
+			"bathrooms": "Badezimmer",
+			"squareMeters": "Größe",
+			"financialDetails": "Finanzielle Details",
+			"purchasePrice": "Kaufpreis",
+			"currentValue": "Aktueller Wert",
+			"actions": {
+				"edit": "Immobilie bearbeiten",
+				"expenses": "Ausgaben verwalten"
+			}
+		},
+		"alerts": {
+			"storedProperties": {
+				"title": "Gespeicherte Immobilien verfügbar",
+				"description": "Sie haben {count} gespeicherte Immobilien, die importiert werden können.",
+				"import": "Immobilien importieren",
+				"dismiss": "Schließen"
+			}
 		}
 	}
 }

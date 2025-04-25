@@ -177,9 +177,14 @@
 			"description": "Fill in the details below to add a new property to your portfolio.",
 			"sections": {
 				"basicInfo": "Basic Information",
+				"basicInfoDesc": "Enter the basic details about your property including name and location.",
 				"propertyDetails": "Property Details",
+				"propertyDetailsDesc": "Specify the physical characteristics of your property.",
 				"financialInfo": "Financial Information",
-				"additionalInfo": "Additional Information"
+				"financialInfoDesc": "Enter the financial details of your property investment.",
+				"additionalInfo": "Additional Information",
+				"images": "Property Images",
+				"imagesDesc": "Upload photos of your property to showcase its features and condition."
 			},
 			"fields": {
 				"propertyType": "Property Type",
@@ -224,15 +229,41 @@
 				"bathroomsRequired": "Please enter the number of bathrooms"
 			},
 			"errors": {
-				"createFailed": "There was an error creating your property. Please try again."
+				"createFailed": "There was an error creating your property. Please try again.",
+				"updateFailed": "There was an error updating your property. Please try again.",
+				"finalizeFailed": "There was an error finalizing your property. Please try again.",
+				"submitFailed": "Failed to submit the form. Please try again.",
+				"invalidAddress": "Invalid address selected",
+				"addressNotFound": "Address not found"
 			},
 			"success": {
-				"created": "Property created successfully"
+				"created": "Property created successfully",
+				"addressFound": "Address found successfully"
 			},
 			"actions": {
 				"cancel": "Cancel",
 				"create": "Create Property",
-				"creating": "Creating..."
+				"creating": "Creating...",
+				"next": "Next",
+				"previous": "Previous",
+				"finish": "Finish",
+				"saving": "Saving...",
+				"finalizing": "Finalizing...",
+				"save": "Save Property"
+			},
+			"googleMaps": {
+				"placeholder": "Google Maps integration will be available here",
+				"searchPlaceholder": "Search for an address",
+				"noResults": "No results found",
+				"error": "Error loading Google Maps"
+			},
+			"images": {
+				"dropzone": "Drop files here or click to upload",
+				"maxFiles": "Maximum 5 files",
+				"fileTypes": "Supported file types: JPG, PNG",
+				"maxSize": "Maximum file size: 5MB",
+				"uploadError": "Error uploading image",
+				"removeImage": "Remove image"
 			}
 		},
 		"types": {
@@ -242,18 +273,56 @@
 			"townhouse": "Townhouse",
 			"duplex": "Duplex",
 			"commercial": "Commercial Property",
-			"other": "Other"
+			"land": "Land",
+			"other": "Other",
+			"house": "House"
 		},
 		"table": {
 			"name": "Name",
 			"address": "Address",
 			"status": "Status",
 			"lastUpdated": "Last Updated",
-			"untitled": "Untitled"
+			"untitled": "Untitled",
+			"actions": "Actions",
+			"edit": "Edit property",
+			"search": "Search properties...",
+			"noResults": "No properties found",
+			"pageInfo": "Page {page} of {totalPages}",
+			"previousPage": "Previous page",
+			"nextPage": "Next page",
+			"totalProperties": "{count} properties",
+			"searchResults": "{count} of {total} properties"
 		},
 		"status": {
 			"active": "Active",
 			"inactive": "Inactive"
+		},
+		"backToList": "Back to Properties",
+		"detail": {
+			"noImages": "No images available",
+			"location": "Location",
+			"description": "Description",
+			"propertyDetails": "Property Details",
+			"propertyType": "Property Type",
+			"yearBuilt": "Year Built",
+			"bedrooms": "Bedrooms",
+			"bathrooms": "Bathrooms",
+			"squareMeters": "Size",
+			"financialDetails": "Financial Details",
+			"purchasePrice": "Purchase Price",
+			"currentValue": "Current Value",
+			"actions": {
+				"edit": "Edit Property",
+				"expenses": "Manage Expenses"
+			}
+		},
+		"alerts": {
+			"storedProperties": {
+				"title": "Stored Properties Available",
+				"description": "You have {count} stored properties that can be imported.",
+				"import": "Import Properties",
+				"dismiss": "Dismiss"
+			}
 		}
 	}
 }
