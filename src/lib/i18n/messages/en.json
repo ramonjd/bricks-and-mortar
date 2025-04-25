@@ -284,7 +284,14 @@
 			"lastUpdated": "Last Updated",
 			"untitled": "Untitled",
 			"actions": "Actions",
-			"edit": "Edit property"
+			"edit": "Edit property",
+			"search": "Search properties...",
+			"noResults": "No properties found",
+			"pageInfo": "Page {page} of {totalPages}",
+			"previousPage": "Previous page",
+			"nextPage": "Next page",
+			"totalProperties": "{count} properties",
+			"searchResults": "{count} of {total} properties"
 		},
 		"status": {
 			"active": "Active",

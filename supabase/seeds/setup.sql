@@ -112,37 +112,34 @@ CREATE POLICY "property_users_policy"
   );
 
 -- Create policies for property images
-CREATE POLICY "Property images are accessible to property owners and shared users" 
-  ON storage.objects 
-  FOR SELECT 
-  USING (
-    bucket_id = 'properties' AND 
-    (
-      EXISTS (
-        SELECT 1 FROM public.properties 
-        WHERE created_by = auth.uid() AND 
-        image_urls @> ARRAY[storage.objects.name]
-      ) OR 
-      EXISTS (
-        SELECT 1 FROM public.properties p
-        JOIN public.property_users pu ON p.id = pu.property_id
-        WHERE pu.user_id = auth.uid() AND 
-        p.image_urls @> ARRAY[storage.objects.name]
-      )
-    )
-  );
+CREATE POLICY "Property images are publicly accessible" 
+ON storage.objects 
+FOR SELECT 
+USING (bucket_id = 'properties');
 
-CREATE POLICY "Property owners can upload property images" 
-  ON storage.objects 
-  FOR INSERT 
-  WITH CHECK (
-    bucket_id = 'properties' AND 
-    EXISTS (
-      SELECT 1 FROM public.properties 
-      WHERE created_by = auth.uid() AND 
-      image_urls @> ARRAY[storage.objects.name]
-    )
-  );
+CREATE POLICY "Users can upload property images" 
+ON storage.objects 
+FOR INSERT 
+WITH CHECK (
+  bucket_id = 'properties' AND 
+  (storage.foldername(name))[1] = auth.uid()::text
+);
+
+CREATE POLICY "Users can update their own property images" 
+ON storage.objects 
+FOR UPDATE 
+USING (
+  bucket_id = 'properties' AND 
+  (storage.foldername(name))[1] = auth.uid()::text
+);
+
+CREATE POLICY "Users can delete their own property images" 
+ON storage.objects 
+FOR DELETE 
+USING (
+  bucket_id = 'properties' AND 
+  (storage.foldername(name))[1] = auth.uid()::text
+); 
 
 -- Drop existing triggers if they exist
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;

@@ -284,7 +284,14 @@
 			"lastUpdated": "Zuletzt aktualisiert",
 			"untitled": "Unbenannt",
 			"actions": "Aktionen",
-			"edit": "Immobilie bearbeiten"
+			"edit": "Immobilie bearbeiten",
+			"search": "Immobilien suchen...",
+			"noResults": "Keine Immobilien gefunden",
+			"pageInfo": "Seite {page} von {totalPages}",
+			"previousPage": "Vorherige Seite",
+			"nextPage": "Nächste Seite",
+			"totalProperties": "{count} Immobilien",
+			"searchResults": "{count} von {total} Immobilien"
 		},
 		"status": {
 			"active": "Aktiv",
