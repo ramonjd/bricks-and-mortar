@@ -344,7 +344,7 @@ export default function NewPropertyForm({
 		};
 	}, [map, isMapLoaded, form.watch('latitude'), form.watch('longitude')]);
 
-	// Set form values from prefilledData after form initialization
+	// Set form values from prefilledData after form initialization and populate image previews
 	useEffect(() => {
 		if (prefilledData && Object.keys(prefilledData).length > 0) {
 			console.log('Setting form values from prefilledData:', prefilledData);
@@ -353,11 +353,43 @@ export default function NewPropertyForm({
 			if (prefilledData.address) {
 				form.setValue('address', prefilledData.address as string);
 			}
-			if (prefilledData.lat) {
-				form.setValue('latitude', prefilledData.lat as number);
+			if (prefilledData.latitude) {
+				form.setValue('latitude', prefilledData.latitude as number);
 			}
-			if (prefilledData.lng) {
-				form.setValue('longitude', prefilledData.lng as number);
+			if (prefilledData.longitude) {
+				form.setValue('longitude', prefilledData.longitude as number);
+			}
+			if (prefilledData.name) {
+				form.setValue('name', prefilledData.name as string);
+			}
+			if (prefilledData.property_type) {
+				form.setValue('property_type', prefilledData.property_type as string);
+			}
+			if (prefilledData.year_built) {
+				form.setValue('year_built', prefilledData.year_built as number);
+			}
+			if (prefilledData.bedrooms) {
+				form.setValue('bedrooms', prefilledData.bedrooms as number);
+			}
+			if (prefilledData.bathrooms) {
+				form.setValue('bathrooms', prefilledData.bathrooms as number);
+			}
+			if (prefilledData.square_meters) {
+				form.setValue('square_meters', prefilledData.square_meters as number);
+			}
+			if (prefilledData.purchase_price) {
+				form.setValue('purchase_price', prefilledData.purchase_price as number);
+			}
+			if (prefilledData.current_value) {
+				form.setValue('current_value', prefilledData.current_value as number);
+			}
+			if (prefilledData.description) {
+				form.setValue('description', prefilledData.description as string);
+			}
+
+			// Set up image previews if the property has images
+			if (prefilledData.image_urls && Array.isArray(prefilledData.image_urls)) {
+				setImagePreviewUrls(prefilledData.image_urls as string[]);
 			}
 
 			// Log the updated form values
@@ -379,7 +411,18 @@ export default function NewPropertyForm({
 	// Remove image at specific index
 	const removeImage = (index: number) => {
 		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
-		setImagePreviewUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
+		setImagePreviewUrls((prevUrls) => {
+			const newUrls = [...prevUrls];
+			newUrls.splice(index, 1);
+			return newUrls;
+		});
+
+		// If this is an existing property with image_urls, update the form value
+		if (prefilledData && prefilledData.image_urls) {
+			const updatedUrls = [...imagePreviewUrls];
+			updatedUrls.splice(index, 1);
+			form.setValue('image_urls', updatedUrls);
+		}
 	};
 
 	// Upload images to storage
@@ -412,20 +455,7 @@ export default function NewPropertyForm({
 		return urls.filter((url): url is string => url !== null);
 	};
 
-	// Update property
-	const updateProperty = async (id: string, data: Partial<FormData>) => {
-		try {
-			const { error } = await supabase.from('properties').update(data).eq('id', id);
-
-			if (error) throw error;
-
-			return true;
-		} catch (err) {
-			console.error('Error updating property:', err);
-			setError(t('new.errors.updateFailed'));
-			return false;
-		}
-	};
+	// This function is now handled by the EditPropertyForm component
 
 	// Handle form submission
 	const handleSubmit = async () => {
@@ -442,32 +472,44 @@ export default function NewPropertyForm({
 				imageUrls = await uploadImages(images);
 			}
 
-			// Create the property record
-			const { data: property, error: createError } = await supabase
-				.from('properties')
-				.insert([
-					{
-						...formData,
-						created_by: userId,
-						image_urls: imageUrls,
-					},
-				])
-				.select()
-				.single();
+			// If we're editing (have prefilledData with id), combine existing image_urls with new ones
+			if (prefilledData && prefilledData.id) {
+				// Use existing image_urls if present
+				const existingImageUrls = prefilledData.image_urls || [];
+				formData.image_urls = [...existingImageUrls, ...imageUrls];
+				
+				// Call the onFormSubmit prop if provided (for EditPropertyForm)
+				if (onFormSubmit) {
+					await onFormSubmit(formData);
+				}
+			} else {
+				// Create a new property record
+				const { error: createError } = await supabase
+					.from('properties')
+					.insert([
+						{
+							...formData,
+							created_by: userId,
+							image_urls: imageUrls,
+						},
+					])
+					.select()
+					.single();
 
-			if (createError) {
-				console.error('Error creating property:', createError);
-				setError(createError.message);
-				return;
+				if (createError) {
+					console.error('Error creating property:', createError);
+					setError(createError.message);
+					return;
+				}
+
+				// Call the onFormSubmit prop if provided
+				if (onFormSubmit) {
+					await onFormSubmit(formData);
+				}
+
+				toast.success(t('new.success.created'));
+				router.push(`/${locale}/dashboard/properties`);
 			}
-
-			// Call the onFormSubmit prop if provided
-			if (onFormSubmit) {
-				await onFormSubmit(formData);
-			}
-
-			toast.success(t('new.success.created'));
-			router.push(`/${locale}/dashboard/properties`);
 		} catch (error) {
 			console.error('Error submitting form:', error);
 			setError(error instanceof Error ? error.message : 'An error occurred');
@@ -859,10 +901,10 @@ export default function NewPropertyForm({
 						{isSubmitting ? (
 							<>
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-								{t('new.actions.saving')}
+								{t(prefilledData && prefilledData.id ? 'new.actions.saving' : 'new.actions.creating')}
 							</>
 						) : (
-							t('new.actions.save')
+							t(prefilledData && prefilledData.id ? 'new.actions.save' : 'new.actions.create')
 						)}
 					</Button>
 				</div>
