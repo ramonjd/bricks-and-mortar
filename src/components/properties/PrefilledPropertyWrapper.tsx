@@ -79,8 +79,13 @@ export default function PrefilledPropertyWrapper({
 				try {
 					const parsedData = JSON.parse(storedPropertiesData);
 					if (Array.isArray(parsedData)) {
-						const updatedProperties = parsedData.filter((p) => p.id !== storedPropertyId);
-						localStorage.setItem('get_started_properties', JSON.stringify(updatedProperties));
+						const updatedProperties = parsedData.filter(
+							(p) => p.id !== storedPropertyId
+						);
+						localStorage.setItem(
+							'get_started_properties',
+							JSON.stringify(updatedProperties)
+						);
 					}
 				} catch (error) {
 					console.error('Error updating stored properties:', error);
