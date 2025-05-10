@@ -180,6 +180,16 @@
 			"remove": "Remove",
 			"dismiss": "Dismiss"
 		},
+		"edit": {
+			"title": "Edit Property",
+			"description": "Update the details of your property below.",
+			"success": {
+				"updated": "Property updated successfully"
+			},
+			"errors": {
+				"updateFailed": "There was an error updating your property. Please try again."
+			}
+		},
 		"new": {
 			"title": "Add New Property",
 			"description": "Fill in the details below to add a new property to your portfolio.",

@@ -205,9 +205,11 @@ export default async function PropertyDetailPage({
 
 					{/* Actions */}
 					<div className="bg-white shadow rounded-lg p-6">
-						<Button className="w-full mb-2" variant="default">
-							{t('detail.actions.edit')}
-						</Button>
+						<Link href={`/${locale}/dashboard/properties/edit/${id}`} passHref>
+							<Button className="w-full mb-2" variant="default">
+								{t('detail.actions.edit')}
+							</Button>
+						</Link>
 
 						<Button className="w-full" variant="outline">
 							{t('detail.actions.expenses')}

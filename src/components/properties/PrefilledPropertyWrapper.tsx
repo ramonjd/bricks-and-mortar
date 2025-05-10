@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import NewPropertyForm from './NewPropertyForm';
-import type { StoredProperty } from '@/types';
 
 interface PrefilledPropertyWrapperProps {
 	userId: string;
@@ -71,7 +70,7 @@ export default function PrefilledPropertyWrapper({
 		}
 	}, [storedPropertyId]);
 
-	const handleFormSubmit = async (formData: Record<string, unknown>) => {
+	const handleFormSubmit = async () => {
 		// If we have a stored property ID, remove it from localStorage after successful submission
 		if (storedPropertyId) {
 			const storedPropertiesData = localStorage.getItem('get_started_properties');

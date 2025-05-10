@@ -172,6 +172,16 @@
 		"signUpAgain": "Erneut registrieren"
 	},
 	"properties": {
+		"edit": {
+			"title": "Immobilie bearbeiten",
+			"description": "Aktualisieren Sie die Details Ihrer Immobilie unten.",
+			"success": {
+				"updated": "Immobilie erfolgreich aktualisiert"
+			},
+			"errors": {
+				"updateFailed": "Beim Aktualisieren Ihrer Immobilie ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+			}
+		},
 		"new": {
 			"title": "Neue Immobilie hinzufügen",
 			"description": "Füllen Sie die Details unten aus, um eine neue Immobilie zu Ihrem Portfolio hinzuzufügen.",
