@@ -153,8 +153,6 @@ export default function NewPropertyForm({
 
 	// Initialize form with proper types
 
-	console.log('NewPropertyForm received prefilledData:', prefilledData);
-
 	const formSchema = z.object({
 		name: z.string().min(1, t('new.validation.nameRequired')),
 		address: z.string().min(1, t('new.validation.addressRequired')),
@@ -174,7 +172,6 @@ export default function NewPropertyForm({
 	});
 
 	type FormData = z.infer<typeof formSchema>;
-	console.log('prefilledData', prefilledData);
 	const form = useForm<FormData>({
 		resolver: zodResolver(formSchema) as any,
 		defaultValues: {
@@ -228,7 +225,7 @@ export default function NewPropertyForm({
 				) => {
 					if (status === 'OK' && results && results[0]) {
 						form.setValue('address', results[0].formatted_address);
-						toast.success(t('new.success.addressFound'));
+						//toast.success(t('new.success.addressFound'));
 					}
 				}
 			);
@@ -409,19 +406,75 @@ export default function NewPropertyForm({
 	];
 
 	// Remove image at specific index
-	const removeImage = (index: number) => {
-		setImages((prevImages) => prevImages.filter((_, i) => i !== index));
-		setImagePreviewUrls((prevUrls) => {
-			const newUrls = [...prevUrls];
-			newUrls.splice(index, 1);
-			return newUrls;
-		});
+	const removeImage = async (index: number) => {
+		try {
+			const imageUrl = imagePreviewUrls[index];
+			console.log('Removing image URL:', imageUrl);
 
-		// If this is an existing property with image_urls, update the form value
-		if (prefilledData && prefilledData.image_urls) {
-			const updatedUrls = [...imagePreviewUrls];
-			updatedUrls.splice(index, 1);
-			form.setValue('image_urls', updatedUrls);
+			// First update the database record to remove the URL
+			if (prefilledData && prefilledData.id) {
+				const updatedUrls = [...imagePreviewUrls];
+				updatedUrls.splice(index, 1);
+
+				const { error: updateError } = await supabase
+					.from('properties')
+					.update({ image_urls: updatedUrls })
+					.eq('id', prefilledData.id);
+
+				if (updateError) {
+					console.error('Error updating property record:', updateError);
+					toast.error(t('new.images.updateError'));
+					return;
+				}
+			}
+
+			// Extract the file path from the URL
+			const pathMatch = imageUrl.match(/\/storage\/v1\/object\/public\/properties\/(.+)/);
+			if (!pathMatch) {
+				console.error('Could not extract file path from URL');
+				toast.error(t('new.images.deleteError'));
+				return;
+			}
+
+			const filePath = pathMatch[1];
+			console.log('File path to delete:', filePath);
+
+			// Delete the file from storage
+			console.log('Attempting to delete from storage with path:', filePath);
+			const { error: deleteError } = await supabase.storage
+				.from('properties')
+				.remove([filePath]);
+
+			if (deleteError) {
+				console.error('Error deleting image from storage:', deleteError);
+				toast.error(t('new.images.deleteError'));
+				return;
+			}
+
+			// Create new arrays without the removed image
+			const newImages = images.filter((_, i) => i !== index);
+			const newPreviewUrls = [...imagePreviewUrls];
+			newPreviewUrls.splice(index, 1);
+
+			// Update all state in one go
+			await Promise.all([
+				// Update form data
+				form.setValue('image_urls', newPreviewUrls),
+				// Update local state
+				new Promise<void>((resolve) => {
+					setImages(newImages);
+					setImagePreviewUrls(newPreviewUrls);
+					resolve();
+				}),
+			]);
+
+			// Force a re-render of the image grid
+			router.refresh();
+
+			toast.success(t('new.images.deleted'));
+		} catch (error) {
+			console.error('Error removing image:', error);
+			toast.error(t('new.images.deleteError'));
 		}
 	};
 
@@ -477,7 +530,7 @@ export default function NewPropertyForm({
 				// Use existing image_urls if present
 				const existingImageUrls = prefilledData.image_urls || [];
 				formData.image_urls = [...existingImageUrls, ...imageUrls];
-				
+
 				// Call the onFormSubmit prop if provided (for EditPropertyForm)
 				if (onFormSubmit) {
 					await onFormSubmit(formData);
@@ -901,10 +954,18 @@ export default function NewPropertyForm({
 						{isSubmitting ? (
 							<>
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-								{t(prefilledData && prefilledData.id ? 'new.actions.saving' : 'new.actions.creating')}
+								{t(
+									prefilledData && prefilledData.id
+										? 'new.actions.saving'
+										: 'new.actions.creating'
+								)}
 							</>
 						) : (
-							t(prefilledData && prefilledData.id ? 'new.actions.save' : 'new.actions.create')
+							t(
+								prefilledData && prefilledData.id
+									? 'new.actions.save'
+									: 'new.actions.create'
+							)
 						)}
 					</Button>
 				</div>
