@@ -172,6 +172,14 @@
 		"signUpAgain": "Sign Up Again"
 	},
 	"properties": {
+		"storedProperties": {
+			"title": "Saved Properties Found",
+			"description": "We found {count} properties saved in your browser. Would you like to create a new property from any of these?",
+			"clearAll": "Clear All",
+			"create": "Create Property",
+			"remove": "Remove",
+			"dismiss": "Dismiss"
+		},
 		"new": {
 			"title": "Add New Property",
 			"description": "Fill in the details below to add a new property to your portfolio.",

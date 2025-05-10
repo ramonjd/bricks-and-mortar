@@ -323,6 +323,14 @@
 				"import": "Immobilien importieren",
 				"dismiss": "Schließen"
 			}
+		},
+		"storedProperties": {
+			"title": "Gespeicherte Immobilien gefunden",
+			"description": "Wir haben {count} Immobilien in Ihrem Browser gefunden. Möchten Sie eine neue Immobilie aus einer dieser erstellen?",
+			"clearAll": "Alle löschen",
+			"create": "Immobilie erstellen",
+			"remove": "Entfernen",
+			"dismiss": "Schließen"
 		}
 	}
 }

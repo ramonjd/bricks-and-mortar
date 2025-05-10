@@ -70,12 +70,14 @@ type NewPropertyFormProps = {
 	userId: string;
 	locale: string;
 	prefilledData?: Partial<FormData>;
+	onFormSubmit?: (formData: FormData) => Promise<void>;
 };
 
 export default function NewPropertyForm({
 	userId,
 	locale,
 	prefilledData = {},
+	onFormSubmit,
 }: NewPropertyFormProps) {
 	const t = useTranslations('properties');
 	const router = useRouter();
@@ -150,6 +152,29 @@ export default function NewPropertyForm({
 	};
 
 	// Initialize form with proper types
+
+	console.log('NewPropertyForm received prefilledData:', prefilledData);
+
+	const formSchema = z.object({
+		name: z.string().min(1, t('new.validation.nameRequired')),
+		address: z.string().min(1, t('new.validation.addressRequired')),
+		latitude: z.number().optional(),
+		longitude: z.number().optional(),
+		property_type: z.string().min(1, t('new.validation.typeRequired')),
+		bedrooms: z.number().min(0),
+		bathrooms: z.number().min(0),
+		square_meters: z.number().min(0),
+		year_built: z.number().min(1800).max(new Date().getFullYear()),
+		purchase_date: z.date().optional(),
+		purchase_price: z.number().min(0),
+		current_value: z.number().min(0),
+		description: z.string().optional(),
+		status: z.string().default('active'),
+		image_urls: z.array(z.string()).default([]),
+	});
+
+	type FormData = z.infer<typeof formSchema>;
+	console.log('prefilledData', prefilledData);
 	const form = useForm<FormData>({
 		resolver: zodResolver(formSchema) as any,
 		defaultValues: {
@@ -319,6 +344,28 @@ export default function NewPropertyForm({
 		};
 	}, [map, isMapLoaded, form.watch('latitude'), form.watch('longitude')]);
 
+	// Set form values from prefilledData after form initialization
+	useEffect(() => {
+		if (prefilledData && Object.keys(prefilledData).length > 0) {
+			console.log('Setting form values from prefilledData:', prefilledData);
+
+			// Set each field individually to avoid type issues
+			if (prefilledData.address) {
+				form.setValue('address', prefilledData.address as string);
+			}
+			if (prefilledData.lat) {
+				form.setValue('latitude', prefilledData.lat as number);
+			}
+			if (prefilledData.lng) {
+				form.setValue('longitude', prefilledData.lng as number);
+			}
+
+			// Log the updated form values
+			console.log('Updated form values:', form.getValues());
+		}
+	}, [prefilledData, form]);
+
+	console.log('Form defaultValues:', form.getValues());
 	// Property types
 	const propertyTypes = [
 		{ value: 'house', label: t('types.house') },
@@ -348,7 +395,7 @@ export default function NewPropertyForm({
 				.from('properties')
 				.upload(filePath, image, {
 					cacheControl: '3600',
-					upsert: false
+					upsert: false,
 				});
 
 			if (uploadError) {
@@ -381,52 +428,49 @@ export default function NewPropertyForm({
 	};
 
 	// Handle form submission
-	const onSubmit = async () => {
+	const handleSubmit = async () => {
 		setIsSubmitting(true);
 		setError(null);
 
 		try {
-			const formValues = form.getValues();
-			
-			// Create the property
-			const { data: propertyData, error: createError } = await supabase
+			const formData = form.getValues();
+			console.log('Submitting form data:', formData);
+
+			// Upload images first
+			let imageUrls: string[] = [];
+			if (images.length > 0) {
+				imageUrls = await uploadImages(images);
+			}
+
+			// Create the property record
+			const { data: property, error: createError } = await supabase
 				.from('properties')
-				.insert({
-					created_by: userId,
-					name: formValues.name,
-					address: formValues.address,
-					latitude: formValues.latitude,
-					longitude: formValues.longitude,
-					property_type: formValues.property_type,
-					year_built: formValues.year_built,
-					bedrooms: formValues.bedrooms,
-					bathrooms: formValues.bathrooms,
-					square_meters: formValues.square_meters,
-					purchase_price: formValues.purchase_price,
-					current_value: formValues.current_value,
-					description: formValues.description,
-					status: formValues.status,
-				})
-				.select('id')
+				.insert([
+					{
+						...formData,
+						created_by: userId,
+						image_urls: imageUrls,
+					},
+				])
+				.select()
 				.single();
 
-			if (createError || !propertyData) {
-				setError(createError?.message || 'Failed to create property');
+			if (createError) {
+				console.error('Error creating property:', createError);
+				setError(createError.message);
 				return;
 			}
 
-			if (images.length > 0) {
-				const imageUrls = await uploadImages(images);
-				if (imageUrls.length > 0) {
-					await updateProperty(propertyData.id, { image_urls: imageUrls });
-				}
+			// Call the onFormSubmit prop if provided
+			if (onFormSubmit) {
+				await onFormSubmit(formData);
 			}
 
-			// Redirect to the property page
-			router.push(`/${locale}/dashboard/properties/${propertyData.id}`);
-		} catch (err) {
-			console.error('Error submitting form:', err);
-			setError(t('new.errors.submitFailed'));
+			toast.success(t('new.success.created'));
+			router.push(`/${locale}/dashboard/properties`);
+		} catch (error) {
+			console.error('Error submitting form:', error);
+			setError(error instanceof Error ? error.message : 'An error occurred');
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -458,7 +502,7 @@ export default function NewPropertyForm({
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+			<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
 				{error && (
 					<Alert variant="destructive">
 						<AlertDescription>{error}</AlertDescription>

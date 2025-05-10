@@ -70,9 +70,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 							})}
 						</span>
 					) : (
-						<span>
-							{t('totalProperties', { count: data.length })}
-						</span>
+						<span>{t('totalProperties', { count: data.length })}</span>
 					)}
 				</div>
 			</div>

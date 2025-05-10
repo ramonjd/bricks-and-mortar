@@ -59,6 +59,11 @@ interface Place {
 		};
 		viewport?: any;
 	};
+	address_components?: Array<{
+		long_name: string;
+		short_name: string;
+		types: string[];
+	}>;
 }
 
 interface Address {
@@ -66,27 +71,20 @@ interface Address {
 	address: string;
 	lat: number;
 	lng: number;
+	country?: string;
+	state?: string;
 }
 
 export default function GetStarted() {
 	const t = useTranslations();
 	const [map, setMap] = useState<MapInstance | null>(null);
 	const [addresses, setAddresses] = useState<Address[]>([]);
-	const [sessionId, setSessionId] = useState<string>('');
 	const [isMapLoaded, setIsMapLoaded] = useState(false);
 
-	// Initialize session ID on first load
+	// Initialize on first load
 	useEffect(() => {
-		// Create or retrieve session ID
-		let storedSessionId = sessionStorage.getItem('property_session_id');
-		if (!storedSessionId) {
-			storedSessionId = uuidv4();
-			sessionStorage.setItem('property_session_id', storedSessionId);
-		}
-		setSessionId(storedSessionId);
-
 		// Load stored addresses
-		const storedAddresses = sessionStorage.getItem(`property_addresses_${storedSessionId}`);
+		const storedAddresses = localStorage.getItem('get_started_properties');
 		if (storedAddresses) {
 			setAddresses(JSON.parse(storedAddresses));
 		}
@@ -94,7 +92,6 @@ export default function GetStarted() {
 		// Load Google Maps API
 		if (!(window as unknown as { google?: GoogleMaps }).google) {
 			const script = document.createElement('script');
-			// Replace with actual API key in .env.local
 			const apiKey =
 				process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'YOUR_GOOGLE_MAPS_API_KEY';
 			script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
@@ -125,7 +122,7 @@ export default function GetStarted() {
 
 			const input = document.getElementById('address-input') as HTMLInputElement;
 			const autocomplete = new google.maps.places.Autocomplete(input, {
-				fields: ['formatted_address', 'geometry'],
+				fields: ['formatted_address', 'geometry', 'address_components'],
 			});
 			autocomplete.bindTo('bounds', newMap);
 
@@ -140,7 +137,6 @@ export default function GetStarted() {
 				if (place.geometry.viewport) {
 					newMap.fitBounds(place.geometry.viewport);
 				} else {
-					// Convert function-based lat/lng to object-based
 					const location = {
 						lat: place.geometry.location.lat(),
 						lng: place.geometry.location.lng(),
@@ -158,29 +154,54 @@ export default function GetStarted() {
 					map: newMap,
 				});
 
+				// Extract country and state from address components
+				let country: string | undefined;
+				let state: string | undefined;
+
+				if (place.address_components) {
+					for (const component of place.address_components) {
+						if (component.types.includes('country')) {
+							country = component.long_name;
+						}
+						if (component.types.includes('administrative_area_level_1')) {
+							state = component.long_name;
+						}
+					}
+				}
+
 				// Add address to the list
 				addAddress(
 					place.formatted_address || 'Unknown address',
 					place.geometry.location.lat(),
-					place.geometry.location.lng()
+					place.geometry.location.lng(),
+					country,
+					state
 				);
 			});
 		}
 	}, [isMapLoaded]);
 
-	// Save addresses to session storage whenever they change
+	// Save addresses to local storage whenever they change
 	useEffect(() => {
-		if (sessionId && addresses.length > 0) {
-			sessionStorage.setItem(`property_addresses_${sessionId}`, JSON.stringify(addresses));
+		if (addresses.length > 0) {
+			localStorage.setItem('get_started_properties', JSON.stringify(addresses));
 		}
-	}, [addresses, sessionId]);
+	}, [addresses]);
 
-	const addAddress = (address: string, lat: number, lng: number) => {
+	const addAddress = (
+		address: string,
+		lat: number,
+		lng: number,
+		country?: string,
+		state?: string
+	) => {
 		const newAddress: Address = {
 			id: uuidv4(),
 			address,
 			lat,
 			lng,
+			country,
+			state,
 		};
 		setAddresses((prev) => [...prev, newAddress]);
 	};
