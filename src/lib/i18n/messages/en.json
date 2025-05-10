@@ -16,12 +16,15 @@
 		"home": "Home",
 		"properties": "Properties",
 		"expenses": "Expenses",
+		"tenants": "Tenants",
 		"settings": "Settings",
 		"about": "About",
 		"privacy": "Privacy",
 		"terms": "Terms",
 		"contact": "Contact",
-		"profile": "Profile"
+		"profile": "Profile",
+		"logout": "Logout",
+		"dashboard": "Dashboard"
 	},
 	"about": {
 		"title": "About Bricks & Mortar",
@@ -112,8 +115,17 @@
 	},
 	"dashboard": {
 		"title": "Dashboard",
-		"welcome": "Welcome to Your Dashboard",
-		"description": "This is your main dashboard where you'll be able to manage your properties and track expenses."
+		"welcome": "Welcome to your Dashboard",
+		"description": "This is your main dashboard where you'll be able to manage your properties and track expenses.",
+		"propertiesOccupied": "Properties Occupied",
+		"monthlyExpenses": "Monthly Expenses",
+		"activeTenants": "Active Tenants",
+		"quickActions": "Quick Actions",
+		"recentActivity": "Recent Activity",
+		"noRecentActivity": "No recent activity to show",
+		"addProperty": "Add Property",
+		"addExpense": "Add Expense",
+		"addTenant": "Add Tenant"
 	},
 	"home": {
 		"hero": {

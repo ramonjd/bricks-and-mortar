@@ -1,48 +1,183 @@
-import { unstable_setRequestLocale } from 'next-intl/server';
-import { getTranslations } from 'next-intl/server';
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useSupabase } from '@/lib/hooks/useSupabase';
+import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
+import { Grid, Paper, Text, Title, Group, RingProgress, Stack, Button } from '@mantine/core';
+import { IconBuilding, IconReceipt, IconUsers, IconPlus } from '@tabler/icons-react';
 import Link from 'next/link';
-import StoredPropertiesAlertWrapper from '@/components/properties/StoredPropertiesAlertWrapper';
 
-export default async function DashboardPage({
-	params: { locale },
-}: {
-	params: { locale: string };
-}) {
-	// Enable static rendering
-	unstable_setRequestLocale(locale);
+interface DashboardPageProps {
+	params: {
+		locale: string;
+	};
+}
 
-	const supabase = createClient();
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
+export default function DashboardPage({ params: { locale } }: DashboardPageProps) {
+	const [loading, setLoading] = useState(true);
+	const router = useRouter();
+	const supabase = useSupabase();
+	const t = useTranslations('dashboard');
 
-	// Check if user is authenticated
-	if (!user) {
-		redirect(`/${locale}/login`);
+	useEffect(() => {
+		const checkAuth = async () => {
+			const { data: { session } } = await supabase.auth.getSession();
+			if (!session) {
+				router.push(`/${locale}/login`);
+			}
+			setLoading(false);
+		};
+
+		checkAuth();
+	}, [supabase.auth, router, locale]);
+
+	if (loading) {
+		return (
+			<DashboardLayout locale={locale}>
+				<Text>Loading...</Text>
+			</DashboardLayout>
+		);
 	}
 
-	const t = await getTranslations();
-
 	return (
-		<div className="min-h-screen bg-gray-50">
-			{/* Main content */}
-			<main className="container mx-auto px-4 py-8 sm:px-6">
-				<StoredPropertiesAlertWrapper locale={locale} />
-				<div className="bg-white shadow rounded-lg p-6">
-					<h2 className="text-lg font-medium text-gray-900 mb-4">
-						{t('dashboard.welcome')}
-					</h2>
-					<p className="text-gray-600">{t('dashboard.description')}</p>
-					<Link
+		<DashboardLayout locale={locale}>
+			<Stack gap="lg">
+				<Group justify="space-between" align="center">
+					<Title order={2}>{t('welcome')}</Title>
+					<Button
+						component={Link}
 						href={`/${locale}/dashboard/properties/new`}
-						className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+						leftSection={<IconPlus size="1.2rem" />}
 					>
-						{t('properties.new.title')}
-					</Link>
-				</div>
-			</main>
-		</div>
+						{t('addProperty')}
+					</Button>
+				</Group>
+
+				<Grid>
+					<Grid.Col span={{ base: 12, md: 4 }}>
+						<Paper p="md" radius="md" withBorder>
+							<Group>
+								<RingProgress
+									size={80}
+									roundCaps
+									thickness={8}
+									sections={[{ value: 75, color: 'blue' }]}
+									label={
+										<Text ta="center" size="xs" fw={700}>
+											75%
+										</Text>
+									}
+								/>
+								<Stack gap={0}>
+									<Text size="xl" fw={700}>12</Text>
+									<Text size="sm" c="dimmed">{t('propertiesOccupied')}</Text>
+								</Stack>
+							</Group>
+						</Paper>
+					</Grid.Col>
+
+					<Grid.Col span={{ base: 12, md: 4 }}>
+						<Paper p="md" radius="md" withBorder>
+							<Group>
+								<RingProgress
+									size={80}
+									roundCaps
+									thickness={8}
+									sections={[{ value: 60, color: 'green' }]}
+									label={
+										<Text ta="center" size="xs" fw={700}>
+											60%
+										</Text>
+									}
+								/>
+								<Stack gap={0}>
+									<Text size="xl" fw={700}>$24,500</Text>
+									<Text size="sm" c="dimmed">{t('monthlyExpenses')}</Text>
+								</Stack>
+							</Group>
+						</Paper>
+					</Grid.Col>
+
+					<Grid.Col span={{ base: 12, md: 4 }}>
+						<Paper p="md" radius="md" withBorder>
+							<Group>
+								<RingProgress
+									size={80}
+									roundCaps
+									thickness={8}
+									sections={[{ value: 90, color: 'orange' }]}
+									label={
+										<Text ta="center" size="xs" fw={700}>
+											90%
+										</Text>
+									}
+								/>
+								<Stack gap={0}>
+									<Text size="xl" fw={700}>45</Text>
+									<Text size="sm" c="dimmed">{t('activeTenants')}</Text>
+								</Stack>
+							</Group>
+						</Paper>
+					</Grid.Col>
+				</Grid>
+
+				<Grid>
+					<Grid.Col span={{ base: 12, md: 6 }}>
+						<Paper p="md" radius="md" withBorder>
+							<Stack gap="md">
+								<Group justify="space-between">
+									<Group gap="xs">
+										<IconBuilding size="1.2rem" />
+										<Title order={3}>{t('quickActions')}</Title>
+									</Group>
+								</Group>
+								<Group>
+									<Button
+										component={Link}
+										href={`/${locale}/dashboard/properties/new`}
+										variant="light"
+										leftSection={<IconPlus size="1.2rem" />}
+									>
+										{t('addProperty')}
+									</Button>
+									<Button
+										component={Link}
+										href={`/${locale}/dashboard/expenses/new`}
+										variant="light"
+										leftSection={<IconPlus size="1.2rem" />}
+									>
+										{t('addExpense')}
+									</Button>
+									<Button
+										component={Link}
+										href={`/${locale}/dashboard/tenants/new`}
+										variant="light"
+										leftSection={<IconPlus size="1.2rem" />}
+									>
+										{t('addTenant')}
+									</Button>
+								</Group>
+							</Stack>
+						</Paper>
+					</Grid.Col>
+
+					<Grid.Col span={{ base: 12, md: 6 }}>
+						<Paper p="md" radius="md" withBorder>
+							<Stack gap="md">
+								<Group justify="space-between">
+									<Group gap="xs">
+										<IconReceipt size="1.2rem" />
+										<Title order={3}>{t('recentActivity')}</Title>
+									</Group>
+								</Group>
+								<Text c="dimmed">{t('noRecentActivity')}</Text>
+							</Stack>
+						</Paper>
+					</Grid.Col>
+				</Grid>
+			</Stack>
+		</DashboardLayout>
 	);
 }
