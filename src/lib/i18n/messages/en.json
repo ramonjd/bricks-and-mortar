@@ -174,8 +174,11 @@
 	"properties": {
 		"storedProperties": {
 			"title": "Saved Properties Found",
-			"description": "We found the following properties saved in your browser. Would you like to add any of these to your account?",
-			"clearAll": "Clear All"
+			"description": "We found {count} properties saved in your browser. Would you like to create a new property from any of these?",
+			"clearAll": "Clear All",
+			"create": "Create Property",
+			"remove": "Remove",
+			"dismiss": "Dismiss"
 		},
 		"new": {
 			"title": "Add New Property",

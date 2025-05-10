@@ -70,12 +70,14 @@ type NewPropertyFormProps = {
 	userId: string;
 	locale: string;
 	prefilledData?: Partial<FormData>;
+	onFormSubmit?: (formData: FormData) => Promise<void>;
 };
 
 export default function NewPropertyForm({
 	userId,
 	locale,
 	prefilledData = {},
+	onFormSubmit,
 }: NewPropertyFormProps) {
 	const t = useTranslations('properties');
 	const router = useRouter();
@@ -393,7 +395,7 @@ export default function NewPropertyForm({
 				.from('properties')
 				.upload(filePath, image, {
 					cacheControl: '3600',
-					upsert: false
+					upsert: false,
 				});
 
 			if (uploadError) {
@@ -426,52 +428,49 @@ export default function NewPropertyForm({
 	};
 
 	// Handle form submission
-	const onSubmit = async () => {
+	const handleSubmit = async () => {
 		setIsSubmitting(true);
 		setError(null);
 
 		try {
-			const formValues = form.getValues();
-			
-			// Create the property
-			const { data: propertyData, error: createError } = await supabase
+			const formData = form.getValues();
+			console.log('Submitting form data:', formData);
+
+			// Upload images first
+			let imageUrls: string[] = [];
+			if (images.length > 0) {
+				imageUrls = await uploadImages(images);
+			}
+
+			// Create the property record
+			const { data: property, error: createError } = await supabase
 				.from('properties')
-				.insert({
-					created_by: userId,
-					name: formValues.name,
-					address: formValues.address,
-					latitude: formValues.latitude,
-					longitude: formValues.longitude,
-					property_type: formValues.property_type,
-					year_built: formValues.year_built,
-					bedrooms: formValues.bedrooms,
-					bathrooms: formValues.bathrooms,
-					square_meters: formValues.square_meters,
-					purchase_price: formValues.purchase_price,
-					current_value: formValues.current_value,
-					description: formValues.description,
-					status: formValues.status,
-				})
-				.select('id')
+				.insert([
+					{
+						...formData,
+						created_by: userId,
+						image_urls: imageUrls,
+					},
+				])
+				.select()
 				.single();
 
-			if (createError || !propertyData) {
-				setError(createError?.message || 'Failed to create property');
+			if (createError) {
+				console.error('Error creating property:', createError);
+				setError(createError.message);
 				return;
 			}
 
-			if (images.length > 0) {
-				const imageUrls = await uploadImages(images);
-				if (imageUrls.length > 0) {
-					await updateProperty(propertyData.id, { image_urls: imageUrls });
-				}
+			// Call the onFormSubmit prop if provided
+			if (onFormSubmit) {
+				await onFormSubmit(formData);
 			}
 
-			// Redirect to the property page
-			router.push(`/${locale}/dashboard/properties/${propertyData.id}`);
-		} catch (err) {
-			console.error('Error submitting form:', err);
-			setError(t('new.errors.submitFailed'));
+			toast.success(t('new.success.created'));
+			router.push(`/${locale}/dashboard/properties`);
+		} catch (error) {
+			console.error('Error submitting form:', error);
+			setError(error instanceof Error ? error.message : 'An error occurred');
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -503,7 +502,7 @@ export default function NewPropertyForm({
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+			<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
 				{error && (
 					<Alert variant="destructive">
 						<AlertDescription>{error}</AlertDescription>

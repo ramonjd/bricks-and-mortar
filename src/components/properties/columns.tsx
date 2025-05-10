@@ -60,7 +60,7 @@ const ActionsCell = ({ row }: { row: any }) => {
 	const t = useTranslations('properties.table');
 	const params = useParams();
 	const locale = params.locale as string;
-	
+
 	return (
 		<Link href={`/${locale}/dashboard/properties/${row.original.id}`}>
 			<Button variant="ghost" size="icon">

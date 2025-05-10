@@ -31,3 +31,12 @@ export interface PropertyMember {
 	role: 'owner' | 'tenant' | 'manager';
 	joinedAt: Date;
 }
+
+export interface StoredProperty {
+	id: string;
+	address: string;
+	lat: number;
+	lng: number;
+	country?: string;
+	state?: string;
+}

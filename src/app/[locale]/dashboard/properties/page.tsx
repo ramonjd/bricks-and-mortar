@@ -2,8 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { DataTable } from '@/components/properties/DataTable';
 import { columns } from '@/components/properties/columns';
-import Link from 'next/link';import 
-{ unstable_setRequestLocale } from 'next-intl/server';
+import Link from 'next/link';
+import { unstable_setRequestLocale } from 'next-intl/server';
 import StoredPropertiesAlertWrapper from '@/components/properties/StoredPropertiesAlertWrapper';
 
 export default async function PropertiesPage({
